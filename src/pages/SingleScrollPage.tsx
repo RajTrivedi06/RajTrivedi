@@ -1,105 +1,116 @@
-import React, { useEffect, useRef } from "react";
-import { NavDock } from "@/components/NavDock";
+// src/pages/SingleScrollPage.tsx
 
-// We import "page" components to use as sections
+import { useRef, useEffect } from "react";
+import { useScrollNavigation } from "../providers";
+import { useKeyboardNavigation } from "../hooks";
+import NavDock from "../components/NavDock";
+import { BackgroundGradientAnimation } from "../components/ui/background-gradient-animation";
+
+// Page components used as sections
 import HomePage from "./HomePage";
 import AboutPage from "./AboutPage";
 import SkillsPage from "./SkillsPage";
 import ProjectsPage from "./ProjectsPage";
 import ConnectPage from "./ConnectPage";
-// import ExperiencePage from "./ExperiencePage"; // commented out for now
 
-type SingleScrollPageProps = {
-  section?: keyof typeof SECTION_IDS;
-};
+export default function SingleScrollPage() {
+  const { registerSectionRef } = useScrollNavigation();
 
-// We'll map each route path to a string ID used in our switch
-// The user can still type /Experience, but we'll comment that out in the code below
-const SECTION_IDS = {
-  Home: "home-section",
-  About: "about-section",
-  Skills: "skills-section",
-  Projects: "projects-section",
-  Connect: "connect-section",
-  // Experience: "experience-section",
-};
+  // Enable keyboard navigation
+  useKeyboardNavigation({ enabled: true });
 
-export default function SingleScrollPage({ section }: SingleScrollPageProps) {
-  // Create refs for each section
-  const homeRef = useRef<HTMLDivElement>(null);
-  const aboutRef = useRef<HTMLDivElement>(null);
-  const skillsRef = useRef<HTMLDivElement>(null);
-  const projectsRef = useRef<HTMLDivElement>(null);
-  const connectRef = useRef<HTMLDivElement>(null);
-  // const experienceRef = useRef<HTMLDivElement>(null);
+  // Section refs
+  const homeRef = useRef<HTMLElement>(null);
+  const aboutRef = useRef<HTMLElement>(null);
+  const skillsRef = useRef<HTMLElement>(null);
+  const projectsRef = useRef<HTMLElement>(null);
+  const connectRef = useRef<HTMLElement>(null);
 
-  // Scroll to the correct section (if any) whenever `section` changes
+  // Register refs with navigation provider
   useEffect(() => {
-    if (!section) return;
-
-    const sectionId = SECTION_IDS[section];
-    if (!sectionId) return;
-
-    let targetRef: React.RefObject<HTMLDivElement> | null = null;
-    switch (section) {
-      case "Home":
-        targetRef = homeRef;
-        break;
-      case "About":
-        targetRef = aboutRef;
-        break;
-      case "Skills":
-        targetRef = skillsRef;
-        break;
-      case "Projects":
-        targetRef = projectsRef;
-        break;
-      case "Connect":
-        targetRef = connectRef;
-        break;
-      // case "Experience":
-      //   targetRef = experienceRef;
-      //   break;
-      default:
-        break;
-    }
-
-    if (targetRef?.current) {
-      targetRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [section]);
+    registerSectionRef("home", homeRef);
+    registerSectionRef("about", aboutRef);
+    registerSectionRef("skills", skillsRef);
+    registerSectionRef("projects", projectsRef);
+    registerSectionRef("connect", connectRef);
+  }, [registerSectionRef]);
 
   return (
-    <div className="relative w-full bg-black text-white scroll-smooth">
-      <NavDock />
-
-      {/* The big vertical stack of sections */}
-      <div ref={homeRef} id="home-section">
-        <HomePage />
+    <div className="relative w-full">
+      {/* Fixed background gradient */}
+      <div className="fixed inset-0 -z-10">
+        <BackgroundGradientAnimation
+          className="h-full w-full"
+          containerClassName="h-full w-full"
+          gradientBackgroundStart="#000000"
+          gradientBackgroundEnd="#000000"
+          firstColor="155, 92, 255"
+          secondColor="210, 130, 255"
+          thirdColor="100, 220, 255"
+          fourthColor="220, 50, 200"
+          pointerColor="155, 92, 255"
+          blendingValue="screen"
+        />
       </div>
 
-      <div ref={aboutRef} id="about-section">
-        <AboutPage />
-      </div>
+      {/* Content with semi-transparent overlay */}
+      <div className="relative bg-black/40">
+        {/* Navigation */}
+        <NavDock />
 
-      <div ref={skillsRef} id="skills-section">
-        <SkillsPage />
-      </div>
+        {/* Scroll Container */}
+        <main className="relative">
+          {/* Home Section */}
+          <section
+            ref={homeRef}
+            id="home"
+            aria-label="Home"
+            className="relative min-h-screen"
+          >
+            <HomePage />
+          </section>
 
-      <div ref={projectsRef} id="projects-section">
-        <ProjectsPage />
-      </div>
+          {/* About Section */}
+          <section
+            ref={aboutRef}
+            id="about"
+            aria-label="About"
+            className="relative min-h-screen"
+          >
+            <AboutPage />
+          </section>
 
-      <div ref={connectRef} id="connect-section">
-        <ConnectPage />
-      </div>
+          {/* Skills Section */}
+          <section
+            ref={skillsRef}
+            id="skills"
+            aria-label="Skills"
+            className="relative min-h-screen"
+          >
+            <SkillsPage />
+          </section>
 
-      {/*
-        If you want to add Experience later, just uncomment:
-        <div ref={experienceRef} id="experience-section">
-          <ExperiencePage />
-        </div>
-      */}
+          {/* Projects Section */}
+          <section
+            ref={projectsRef}
+            id="projects"
+            aria-label="Projects"
+            className="relative min-h-screen"
+          >
+            <ProjectsPage />
+          </section>
+
+          {/* Connect Section */}
+          <section
+            ref={connectRef}
+            id="connect"
+            aria-label="Connect"
+            className="relative min-h-screen"
+          >
+            <ConnectPage />
+          </section>
+        </main>
+      </div>
     </div>
   );
 }

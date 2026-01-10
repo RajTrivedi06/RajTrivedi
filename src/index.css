@@ -2,107 +2,363 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Your custom styles (if any) here */
+/* Lenis smooth scroll */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
 
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* ===== GPU ACCELERATION ===== */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+.force-layer {
+  transform: translate3d(0, 0, 0);
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .parallax-layer,
+  .z-axis-element,
+  .horizontal-scroll {
+    transform: none !important;
+  }
+}
+
+/* ===== MOBILE TOUCH OPTIMIZATIONS ===== */
+@media (max-width: 767px) {
+  /* Increase touch targets */
+  button,
+  a,
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Prevent text selection during scroll */
+  .scroll-container {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Optimize for touch */
+  .touch-action-pan-y {
+    touch-action: pan-y;
+  }
+
+  .touch-action-pan-x {
+    touch-action: pan-x;
+  }
+
+  /* Reduce parallax intensity */
+  .parallax-layer {
+    --parallax-intensity: 0.3;
+  }
+
+  /* Simplify perspective effects */
+  .perspective-container {
+    perspective: 500px;
+  }
+
+  /* Disable hover effects on touch */
+  @media (hover: none) {
+    .hover\:scale-110:hover {
+      transform: none;
+    }
+
+    .hover\:bg-white\/10:hover {
+      background-color: inherit;
+    }
+  }
+}
+
+/* ===== iOS-SPECIFIC FIXES ===== */
+@supports (-webkit-touch-callout: none) {
+  /* Fix for iOS Safari 100vh issue */
+  .min-h-screen {
+    min-height: -webkit-fill-available;
+  }
+
+  /* Use CSS variable for accurate vh */
+  .h-screen-safe {
+    height: calc(var(--vh, 1vh) * 100);
+  }
+
+  .min-h-screen-safe {
+    min-height: calc(var(--vh, 1vh) * 100);
+  }
+
+  /* Prevent iOS rubber band effect conflicts */
+  .scroll-container {
+    overscroll-behavior: none;
+  }
+}
+
+/* Safe area padding for notched devices */
+.safe-area-inset {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ===== BROWSER-SPECIFIC FIXES ===== */
+
+/* Safari backdrop-filter fix */
+@supports not (backdrop-filter: blur(10px)) {
+  .backdrop-blur-md,
+  .backdrop-blur-lg,
+  .backdrop-blur-xl {
+    background-color: rgba(0, 0, 0, 0.9) !important;
+  }
+}
+
+/* Firefox scrollbar styling */
+@-moz-document url-prefix() {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #9b5cff #1a1a1a;
+  }
+}
+
+/* Webkit scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #9b5cff;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #b47fff;
+}
+
+/* Safari transform-style fix */
+@supports (-webkit-touch-callout: none) {
+  .transform-style-3d {
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+  }
+
+  /* Fix for Safari perspective */
+  .perspective-container {
+    -webkit-perspective: 1000px;
+    perspective: 1000px;
+  }
+}
+
+/* Firefox animation performance */
+@-moz-document url-prefix() {
+  .will-change-transform {
+    will-change: transform;
+    -moz-transform: translateZ(0);
+  }
+}
+
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ===== BENTO GRID ANIMATIONS ===== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.animate-fade-in-scale {
+  animation: fadeInScale 0.5s ease-out forwards;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Staggered animation delays for bento cards */
+.bento-card-1 {
+  animation-delay: 0ms;
+}
+.bento-card-2 {
+  animation-delay: 100ms;
+}
+.bento-card-3 {
+  animation-delay: 200ms;
+}
+.bento-card-4 {
+  animation-delay: 300ms;
+}
+.bento-card-5 {
+  animation-delay: 400ms;
+}
+.bento-card-6 {
+  animation-delay: 500ms;
+}
+.bento-card-7 {
+  animation-delay: 600ms;
+}
+.bento-card-8 {
+  animation-delay: 700ms;
+}
+
+/* ===== TYPING ANIMATION CURSOR ===== */
+@keyframes blink-cursor {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.animate-blink-cursor {
+  animation: blink-cursor 0.8s step-end infinite;
+}
+
+/* ===== CSS VARIABLES ===== */
 @layer base {
   :root {
     --background: 0 0% 100%;
-
     --foreground: 240 10% 3.9%;
-
     --card: 0 0% 100%;
-
     --card-foreground: 240 10% 3.9%;
-
     --popover: 0 0% 100%;
-
     --popover-foreground: 240 10% 3.9%;
-
     --primary: 240 5.9% 10%;
-
     --primary-foreground: 0 0% 98%;
-
     --secondary: 240 4.8% 95.9%;
-
     --secondary-foreground: 240 5.9% 10%;
-
     --muted: 240 4.8% 95.9%;
-
     --muted-foreground: 240 3.8% 46.1%;
-
     --accent: 240 4.8% 95.9%;
-
     --accent-foreground: 240 5.9% 10%;
-
     --destructive: 0 84.2% 60.2%;
-
     --destructive-foreground: 0 0% 98%;
-
     --border: 240 5.9% 90%;
-
     --input: 240 5.9% 90%;
-
     --ring: 240 10% 3.9%;
-
     --chart-1: 12 76% 61%;
-
     --chart-2: 173 58% 39%;
-
     --chart-3: 197 37% 24%;
-
     --chart-4: 43 74% 66%;
-
     --chart-5: 27 87% 67%;
-
     --radius: 0.5rem;
+
+    /* Custom scrollytelling variables */
+    --vh: 1vh;
+    --scroll-progress: 0;
+    --parallax-intensity: 1;
   }
+
   .dark {
     --background: 240 10% 3.9%;
-
     --foreground: 0 0% 98%;
-
     --card: 240 10% 3.9%;
-
     --card-foreground: 0 0% 98%;
-
     --popover: 240 10% 3.9%;
-
     --popover-foreground: 0 0% 98%;
-
     --primary: 0 0% 98%;
-
     --primary-foreground: 240 5.9% 10%;
-
     --secondary: 240 3.7% 15.9%;
-
     --secondary-foreground: 0 0% 98%;
-
     --muted: 240 3.7% 15.9%;
-
     --muted-foreground: 240 5% 64.9%;
-
     --accent: 240 3.7% 15.9%;
-
     --accent-foreground: 0 0% 98%;
-
     --destructive: 0 62.8% 30.6%;
-
     --destructive-foreground: 0 0% 98%;
-
     --border: 240 3.7% 15.9%;
-
     --input: 240 3.7% 15.9%;
-
     --ring: 240 4.9% 83.9%;
-
     --chart-1: 220 70% 50%;
-
     --chart-2: 160 60% 45%;
-
     --chart-3: 30 80% 55%;
-
     --chart-4: 280 65% 60%;
-
     --chart-5: 340 75% 55%;
   }
 }
@@ -113,9 +369,6 @@
   }
   body {
     @apply bg-background text-foreground;
+    cursor: default !important;
   }
-}
-
-.my-landing-ripple {
-  --foreground: 263 100% 70%; /* White color in HSL */
 }

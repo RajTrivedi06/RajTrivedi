@@ -4,15 +4,20 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import InteractiveHoverButton from "@/components/ui/interactive-hover-button";
 import { BackgroundGradientAnimation } from "@/components/ui/background-gradient-animation";
-// If you want the optional ripple:
+import { usePageTransition } from "@/components/PageTransition";
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
+  const { startTransition } = usePageTransition();
 
   const navigateHome = () => {
-    // This will navigate to /Home,
-    // which loads SingleScrollPage and auto-scrolls to Home section
-    navigate("/Home");
+    // Start the transition animation
+    startTransition();
+    
+    // Navigate after a brief delay to allow animation to start
+    setTimeout(() => {
+      navigate("/Home");
+    }, 50);
   };
 
   return (
@@ -29,18 +34,7 @@ const LandingPage: React.FC = () => {
       blendingValue="hard-light"
     >
       <div className="relative flex h-full w-full items-center justify-center">
-        {/* OPTIONAL ripple 
-        <div className="absolute inset-0 pointer-events-none">
-          <Ripple
-            mainCircleSize={210}
-            mainCircleOpacity={0.24}
-            numCircles={8}
-            className="my-landing-ripple"
-          />
-        </div>
-        */}
-
-        {/* The big button that takes user to /Home */}
+        {/* CTA button that takes user to /Home */}
         <div onClick={navigateHome}>
           <InteractiveHoverButton
             text="Welcome, Let's get started"

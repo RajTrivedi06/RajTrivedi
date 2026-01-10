@@ -1,36 +1,46 @@
-// import React from "react";
-import { Routes, Route } from "react-router-dom";
+// src/App.tsx
 
-// Landing page on root
-import LandingPage from "./pages/LandingPage";
-
-// SingleScrollPage that stacks Home, About, Skills, Projects, Connect
+import { useEffect } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { ScrollDebug } from "./components/ScrollDebug";
+import { PageTransition } from "./components/PageTransition";
 import SingleScrollPage from "./pages/SingleScrollPage";
 
-export default function App() {
+function AppRoutes() {
   return (
     <Routes>
-      {/* Landing page on root */}
-      <Route path="/" element={<LandingPage />} />
+      {/* Main scroll page - handles all sections */}
+      <Route path="/" element={<SingleScrollPage />} />
+      <Route path="/Home" element={<SingleScrollPage />} />
+      <Route path="/About" element={<SingleScrollPage />} />
+      <Route path="/Skills" element={<SingleScrollPage />} />
+      <Route path="/Projects" element={<SingleScrollPage />} />
+      <Route path="/Connect" element={<SingleScrollPage />} />
 
-      {/* All other paths show the single-scroll container,
-          each route scrolls to a different section */}
-      <Route path="/Home" element={<SingleScrollPage section="Home" />} />
-      <Route path="/About" element={<SingleScrollPage section="About" />} />
-      <Route path="/Skills" element={<SingleScrollPage section="Skills" />} />
-      <Route
-        path="/Projects"
-        element={<SingleScrollPage section="Projects" />}
-      />
-      <Route path="/Connect" element={<SingleScrollPage section="Connect" />} />
-
-      {/*
-        Comment out the Experience route for now:
-        <Route path="/Experience" element={<SingleScrollPage section="Experience" />} />
-      */}
-
-      {/* Optionally, a fallback 404 route */}
-      {/* <Route path="*" element={<NotFoundPage />} /> */}
+      {/* Fallback - redirect to Home */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
+
+function App() {
+  // Disable browser scroll restoration
+  useEffect(() => {
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+  }, []);
+
+  return (
+    <>
+      <PageTransition>
+        <AppRoutes />
+      </PageTransition>
+
+      {/* Debug component - disabled for cleaner view */}
+      <ScrollDebug enabled={false} />
+    </>
+  );
+}
+
+export default App;

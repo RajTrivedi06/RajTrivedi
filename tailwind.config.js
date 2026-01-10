@@ -55,12 +55,14 @@ module.exports = {
         // Existing animations
         shine: "shine var(--duration) infinite linear",
         ripple: "ripple var(--duration,2s) ease calc(var(--i, 0)*.2s) infinite",
-        // New animations for the background gradient component
-        first: "moveVertical 30s ease infinite",
-        second: "moveInCircle 20s reverse infinite",
-        third: "moveInCircle 40s linear infinite",
-        fourth: "moveHorizontal 40s ease infinite",
-        fifth: "moveInCircle 20s ease infinite",
+        // Enhanced animations for the background gradient component - random floating
+        gradientFloat1: "gradientFloat1 35s ease-in-out infinite",
+        gradientFloat2: "gradientFloat2 40s ease-in-out infinite",
+        gradientFloat3: "gradientFloat3 38s ease-in-out infinite",
+        gradientFloat4: "gradientFloat4 42s ease-in-out infinite",
+        gradientOrbit1: "gradientOrbit1 50s linear infinite",
+        gradientOrbit2: "gradientOrbit2 60s linear infinite reverse",
+        gradientPulse: "gradientPulse 4s ease-in-out infinite",
       },
       keyframes: {
         // Existing keyframes
@@ -83,38 +85,107 @@ module.exports = {
             transform: "translate(-50%, -50%) scale(0.9)",
           },
         },
-        // New keyframes for the background gradient animations
-        moveHorizontal: {
+        // Enhanced keyframes for random floating across screen
+        gradientFloat1: {
           "0%": {
-            transform: "translateX(-50%) translateY(-10%)",
+            transform: "translate(0%, 0%) scale(1)",
+          },
+          "25%": {
+            transform: "translate(120%, 80%) scale(1.2)",
           },
           "50%": {
-            transform: "translateX(50%) translateY(10%)",
+            transform: "translate(80%, -60%) scale(0.85)",
+          },
+          "75%": {
+            transform: "translate(-90%, 40%) scale(1.1)",
           },
           "100%": {
-            transform: "translateX(-50%) translateY(-10%)",
+            transform: "translate(0%, 0%) scale(1)",
           },
         },
-        moveInCircle: {
+        gradientFloat2: {
           "0%": {
-            transform: "rotate(0deg)",
+            transform: "translate(0%, 0%) scale(1)",
           },
-          "50%": {
-            transform: "rotate(180deg)",
+          "20%": {
+            transform: "translate(-100%, 60%) scale(1.15)",
+          },
+          "40%": {
+            transform: "translate(70%, -80%) scale(0.9)",
+          },
+          "60%": {
+            transform: "translate(-50%, -30%) scale(1.25)",
+          },
+          "80%": {
+            transform: "translate(110%, 50%) scale(0.95)",
           },
           "100%": {
-            transform: "rotate(360deg)",
+            transform: "translate(0%, 0%) scale(1)",
           },
         },
-        moveVertical: {
+        gradientFloat3: {
           "0%": {
-            transform: "translateY(-50%)",
+            transform: "translate(0%, 0%) scale(1)",
+          },
+          "30%": {
+            transform: "translate(90%, -70%) scale(1.18)",
           },
           "50%": {
-            transform: "translateY(50%)",
+            transform: "translate(-120%, 90%) scale(0.88)",
+          },
+          "70%": {
+            transform: "translate(60%, -40%) scale(1.05)",
           },
           "100%": {
-            transform: "translateY(-50%)",
+            transform: "translate(0%, 0%) scale(1)",
+          },
+        },
+        gradientFloat4: {
+          "0%": {
+            transform: "translate(0%, 0%) scale(1)",
+          },
+          "25%": {
+            transform: "translate(-80%, -90%) scale(1.22)",
+          },
+          "45%": {
+            transform: "translate(100%, 70%) scale(0.92)",
+          },
+          "65%": {
+            transform: "translate(-60%, 100%) scale(1.08)",
+          },
+          "85%": {
+            transform: "translate(50%, -50%) scale(0.98)",
+          },
+          "100%": {
+            transform: "translate(0%, 0%) scale(1)",
+          },
+        },
+        gradientOrbit1: {
+          "0%": {
+            transform: "rotate(0deg) translateX(300px) rotate(0deg) scale(1)",
+          },
+          "100%": {
+            transform:
+              "rotate(360deg) translateX(300px) rotate(-360deg) scale(1.1)",
+          },
+        },
+        gradientOrbit2: {
+          "0%": {
+            transform: "rotate(0deg) translateX(400px) rotate(0deg) scale(1)",
+          },
+          "100%": {
+            transform:
+              "rotate(-360deg) translateX(400px) rotate(360deg) scale(0.9)",
+          },
+        },
+        gradientPulse: {
+          "0%, 100%": {
+            opacity: "0.6",
+            transform: "scale(1)",
+          },
+          "50%": {
+            opacity: "1",
+            transform: "scale(1.2)",
           },
         },
       },

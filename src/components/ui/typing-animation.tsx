@@ -1,25 +1,41 @@
 "use client";
 
+import { useEffect, useMemo, useRef, useState } from "react";
+import { motion, MotionProps, useInView } from "motion/react";
 import { cn } from "@/lib/utils";
-import { motion, MotionProps } from "motion/react";
-import { useEffect, useRef, useState } from "react";
 
 interface TypingAnimationProps extends MotionProps {
-  children: string;
+  children?: string;
+  words?: string[];
   className?: string;
   duration?: number;
+  typeSpeed?: number;
+  deleteSpeed?: number;
   delay?: number;
+  pauseDelay?: number;
+  loop?: boolean;
   as?: React.ElementType;
   startOnView?: boolean;
+  showCursor?: boolean;
+  blinkCursor?: boolean;
+  cursorStyle?: "line" | "block" | "underscore";
 }
 
-export default function TypingAnimation({
+export function TypingAnimation({
   children,
+  words,
   className,
   duration = 100,
+  typeSpeed,
+  deleteSpeed,
   delay = 0,
-  as: Component = "div",
-  startOnView = false,
+  pauseDelay = 1000,
+  loop = false,
+  as: Component = "span",
+  startOnView = true,
+  showCursor = true,
+  blinkCursor = true,
+  cursorStyle = "line",
   ...props
 }: TypingAnimationProps) {
   const MotionComponent = motion.create(Component, {
@@ -27,64 +43,135 @@ export default function TypingAnimation({
   });
 
   const [displayedText, setDisplayedText] = useState<string>("");
-  const [started, setStarted] = useState(false);
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [currentCharIndex, setCurrentCharIndex] = useState(0);
+  const [phase, setPhase] = useState<"typing" | "pause" | "deleting">("typing");
   const elementRef = useRef<HTMLElement | null>(null);
+  const isInView = useInView(elementRef as React.RefObject<Element>, {
+    amount: 0.3,
+    once: true,
+  });
+
+  const wordsToAnimate = useMemo(
+    () => words || (children ? [children] : []),
+    [words, children]
+  );
+  const hasMultipleWords = wordsToAnimate.length > 1;
+
+  const typingSpeed = typeSpeed || duration;
+  const deletingSpeed = deleteSpeed || typingSpeed / 2;
+
+  const shouldStart = startOnView ? isInView : true;
 
   useEffect(() => {
-    if (!startOnView) {
-      const startTimeout = setTimeout(() => {
-        setStarted(true);
-      }, delay);
-      return () => clearTimeout(startTimeout);
-    }
+    if (!shouldStart || wordsToAnimate.length === 0) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => {
-            setStarted(true);
-          }, delay);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 },
-    );
+    const timeoutDelay =
+      delay > 0 && displayedText === ""
+        ? delay
+        : phase === "typing"
+          ? typingSpeed
+          : phase === "deleting"
+            ? deletingSpeed
+            : pauseDelay;
 
-    if (elementRef.current) {
-      observer.observe(elementRef.current);
-    }
+    const timeout = setTimeout(() => {
+      const currentWord = wordsToAnimate[currentWordIndex] || "";
+      const graphemes = Array.from(currentWord);
 
-    return () => observer.disconnect();
-  }, [delay, startOnView]);
+      switch (phase) {
+        case "typing":
+          if (currentCharIndex < graphemes.length) {
+            setDisplayedText(graphemes.slice(0, currentCharIndex + 1).join(""));
+            setCurrentCharIndex(currentCharIndex + 1);
+          } else {
+            if (hasMultipleWords || loop) {
+              const isLastWord = currentWordIndex === wordsToAnimate.length - 1;
+              if (!isLastWord || loop) {
+                setPhase("pause");
+              }
+            }
+          }
+          break;
 
-  useEffect(() => {
-    if (!started) return;
+        case "pause":
+          setPhase("deleting");
+          break;
 
-    let i = 0;
-    const typingEffect = setInterval(() => {
-      if (i < children.length) {
-        setDisplayedText(children.substring(0, i + 1));
-        i++;
-      } else {
-        clearInterval(typingEffect);
+        case "deleting":
+          if (currentCharIndex > 0) {
+            setDisplayedText(graphemes.slice(0, currentCharIndex - 1).join(""));
+            setCurrentCharIndex(currentCharIndex - 1);
+          } else {
+            const nextIndex = (currentWordIndex + 1) % wordsToAnimate.length;
+            setCurrentWordIndex(nextIndex);
+            setPhase("typing");
+          }
+          break;
       }
-    }, duration);
+    }, timeoutDelay);
 
-    return () => {
-      clearInterval(typingEffect);
-    };
-  }, [children, duration, started]);
+    return () => clearTimeout(timeout);
+  }, [
+    shouldStart,
+    phase,
+    currentCharIndex,
+    currentWordIndex,
+    displayedText,
+    wordsToAnimate,
+    hasMultipleWords,
+    loop,
+    typingSpeed,
+    deletingSpeed,
+    pauseDelay,
+    delay,
+  ]);
+
+  const currentWordGraphemes = Array.from(
+    wordsToAnimate[currentWordIndex] || ""
+  );
+  const isComplete =
+    !loop &&
+    currentWordIndex === wordsToAnimate.length - 1 &&
+    currentCharIndex >= currentWordGraphemes.length &&
+    phase !== "deleting";
+
+  const shouldShowCursor =
+    showCursor &&
+    !isComplete &&
+    (hasMultipleWords || loop || currentCharIndex < currentWordGraphemes.length);
+
+  const getCursorChar = () => {
+    switch (cursorStyle) {
+      case "block":
+        return "▌";
+      case "underscore":
+        return "_";
+      case "line":
+      default:
+        return "|";
+    }
+  };
 
   return (
     <MotionComponent
       ref={elementRef}
-      className={cn(
-        "text-4xl font-bold leading-[5rem] tracking-[-0.02em]",
-        className,
-      )}
+      className={cn("leading-[5rem] tracking-[-0.02em]", className)}
       {...props}
     >
       {displayedText}
+      {shouldShowCursor && (
+        <span
+          className={cn(
+            "inline-block ml-1",
+            blinkCursor && "animate-blink-cursor"
+          )}
+        >
+          {getCursorChar()}
+        </span>
+      )}
     </MotionComponent>
   );
 }
+
+export default TypingAnimation;
