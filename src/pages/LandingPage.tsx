@@ -13,7 +13,7 @@ const LandingPage: React.FC = () => {
   const navigateHome = () => {
     // Start the transition animation
     startTransition();
-    
+
     // Navigate after a brief delay to allow animation to start
     setTimeout(() => {
       navigate("/Home");
@@ -29,7 +29,6 @@ const LandingPage: React.FC = () => {
       secondColor="210, 130, 255"
       thirdColor="100, 100, 255"
       fourthColor="220, 50, 200"
-      fifthColor="60, 60, 60"
       pointerColor="155, 92, 255"
       blendingValue="hard-light"
     >

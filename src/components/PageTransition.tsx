@@ -80,7 +80,7 @@ export const PageTransition = ({ children }: PageTransitionProps) => {
           initial={
             isFromRoot && transitionTriggeredRef.current
               ? { scale: 0, opacity: 0 }
-              : false
+              : undefined
           }
           animate={{
             scale: isExiting && transitionTriggeredRef.current ? 0 : 1,
@@ -93,7 +93,7 @@ export const PageTransition = ({ children }: PageTransitionProps) => {
                   opacity: 0,
                   transition: { duration: 0.6, ease: [0.4, 0, 0.2, 1] },
                 }
-              : false
+              : undefined
           }
           transition={{
             duration: 0.6,
