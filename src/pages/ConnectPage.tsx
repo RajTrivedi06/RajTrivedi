@@ -8,6 +8,7 @@ import {
   FileTextIcon,
 } from "@radix-ui/react-icons";
 import { BackgroundGradient } from "@/components/ui/background-gradient";
+import { MagneticButton } from "@/components/ui/magnetic-button";
 
 const ConnectPage: React.FC = () => {
   return (
@@ -83,8 +84,10 @@ const ConnectPage: React.FC = () => {
         {/* Contact options row */}
         <div className="flex flex-wrap justify-center gap-6 sm:gap-10 mb-8">
           {/* Email button */}
-          <a
+          <MagneticButton
+            as="a"
             href="mailto:rajtri286@gmail.com"
+            magneticStrength={0.4}
             className="
               flex flex-col items-center gap-2
               p-4
@@ -98,17 +101,19 @@ const ConnectPage: React.FC = () => {
             "
             title="Email"
           >
-            <EnvelopeClosedIcon className="w-6 h-6 group-hover:text-purple-400" />
-            <span className="text-xs text-gray-400 group-hover:text-white">
+            <EnvelopeClosedIcon className="w-6 h-6 group-hover:text-purple-400 transition-colors" />
+            <span className="text-xs text-gray-400 group-hover:text-white transition-colors">
               Email
             </span>
-          </a>
+          </MagneticButton>
 
           {/* GitHub button */}
-          <a
+          <MagneticButton
+            as="a"
             href="https://github.com/RajTrivedi06"
             target="_blank"
             rel="noopener noreferrer"
+            magneticStrength={0.4}
             className="
               flex flex-col items-center gap-2
               p-4
@@ -122,17 +127,19 @@ const ConnectPage: React.FC = () => {
             "
             title="GitHub"
           >
-            <GitHubLogoIcon className="w-6 h-6 group-hover:text-purple-400" />
-            <span className="text-xs text-gray-400 group-hover:text-white">
+            <GitHubLogoIcon className="w-6 h-6 group-hover:text-purple-400 transition-colors" />
+            <span className="text-xs text-gray-400 group-hover:text-white transition-colors">
               GitHub
             </span>
-          </a>
+          </MagneticButton>
 
           {/* LinkedIn button */}
-          <a
+          <MagneticButton
+            as="a"
             href="https://www.linkedin.com/in/raj-trivedi-a28589210/"
             target="_blank"
             rel="noopener noreferrer"
+            magneticStrength={0.4}
             className="
               flex flex-col items-center gap-2
               p-4
@@ -146,15 +153,17 @@ const ConnectPage: React.FC = () => {
             "
             title="LinkedIn"
           >
-            <LinkedInLogoIcon className="w-6 h-6 group-hover:text-purple-400" />
-            <span className="text-xs text-gray-400 group-hover:text-white">
+            <LinkedInLogoIcon className="w-6 h-6 group-hover:text-purple-400 transition-colors" />
+            <span className="text-xs text-gray-400 group-hover:text-white transition-colors">
               LinkedIn
             </span>
-          </a>
+          </MagneticButton>
 
           {/* Resume button (placeholder) */}
-          <a
+          <MagneticButton
+            as="a"
             href="#"
+            magneticStrength={0.4}
             onClick={(e) => {
               e.preventDefault();
               alert("Resume download coming soon!");
@@ -173,11 +182,11 @@ const ConnectPage: React.FC = () => {
             "
             title="Download Resume"
           >
-            <FileTextIcon className="w-6 h-6 group-hover:text-purple-400" />
-            <span className="text-xs text-gray-400 group-hover:text-white">
+            <FileTextIcon className="w-6 h-6 group-hover:text-purple-400 transition-colors" />
+            <span className="text-xs text-gray-400 group-hover:text-white transition-colors">
               Resume
             </span>
-          </a>
+          </MagneticButton>
         </div>
 
         {/* Email display */}

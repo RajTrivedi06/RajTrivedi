@@ -5,6 +5,8 @@ import { useScrollNavigation } from "../providers";
 import { useKeyboardNavigation } from "../hooks";
 import NavDock from "../components/NavDock";
 import { BackgroundGradientAnimation } from "../components/ui/background-gradient-animation";
+import { ScrollProgress } from "../components/ui/scroll-progress";
+import { SectionIndicator } from "../components/ui/section-indicator";
 
 // Page components used as sections
 import HomePage from "./HomePage";
@@ -35,8 +37,23 @@ export default function SingleScrollPage() {
     registerSectionRef("connect", connectRef);
   }, [registerSectionRef]);
 
+  // Section config for side indicator
+  const sectionConfig = [
+    { id: "home", label: "Home" },
+    { id: "about", label: "About" },
+    { id: "skills", label: "Skills" },
+    { id: "projects", label: "Projects" },
+    { id: "connect", label: "Connect" },
+  ];
+
   return (
     <div className="relative w-full">
+      {/* Scroll Progress Indicator */}
+      <ScrollProgress />
+
+      {/* Section Navigation Indicator */}
+      <SectionIndicator sections={sectionConfig} />
+
       {/* Fixed background gradient */}
       <div className="fixed inset-0 -z-10">
         <BackgroundGradientAnimation

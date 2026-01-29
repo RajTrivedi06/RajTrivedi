@@ -104,9 +104,6 @@ const BentoDemo = ({ variant }: { variant: BentoDemo }) => {
                 <p className="text-xs font-semibold">Access check</p>
                 <p className="text-[0.6rem] text-white/60">Verified</p>
               </div>
-              <span className="rounded-full bg-white/10 px-2 py-0.5 text-[0.55rem] text-white/70">
-                ID required
-              </span>
             </div>
             <div className="flex items-center gap-3 rounded-xl px-3 py-2">
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#22C55E]/20">
@@ -176,13 +173,11 @@ const BentoDemo = ({ variant }: { variant: BentoDemo }) => {
       return (
         <div className="flex w-full max-w-[240px] items-center justify-between gap-4 rounded-[20px] border border-gray-700 bg-gray-800/50 px-4 py-3 shadow-[0_10px_26px_rgba(0,0,0,0.3)]">
           <div>
-            <p className="text-sm font-semibold text-gray-100">Urgent review</p>
-            <p className="text-[0.65rem] text-gray-400">Decision needed</p>
+            <p className="text-sm font-semibold text-gray-100">Let's connect</p>
+            <p className="text-[0.65rem] text-gray-400">Open to opportunities</p>
           </div>
-          <div className="flex flex-col items-center justify-center gap-1 rounded-full border border-gray-700 bg-gray-800 px-2.5 py-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-orange-500" />
-            <span className="h-1.5 w-1.5 rounded-full bg-yellow-500" />
-            <Flame className="h-3.5 w-3.5 text-orange-500" />
+          <div className="flex flex-col items-center justify-center gap-1 rounded-full border border-purple-600/50 bg-purple-900/30 px-2.5 py-2">
+            <Flame className="h-4 w-4 text-purple-400" />
           </div>
         </div>
       );
@@ -240,12 +235,9 @@ const BentoDemo = ({ variant }: { variant: BentoDemo }) => {
               </span>
             ))}
           </div>
-          <div className="mt-3 h-2 rounded-full bg-gray-700">
-            <div className="h-full w-2/3 rounded-full bg-purple-600" />
-          </div>
-          <div className="mt-2 flex justify-between text-[0.6rem] text-gray-400">
-            <span>Clarity score</span>
-            <span>74%</span>
+          <div className="mt-3 flex items-center gap-2 text-[0.6rem] text-gray-400">
+            <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+            <span>Building in public</span>
           </div>
         </div>
       );

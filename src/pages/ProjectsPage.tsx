@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
+import { motion } from "motion/react";
 import { ShineBorder } from "@/components/ui/shine-border";
+import { TiltCard } from "@/components/ui/tilt-card";
 import {
   Carousel,
   CarouselContent,
@@ -7,6 +9,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { ExternalLink, Github } from "lucide-react";
 
 // Images (using existing images as placeholders)
 import ChatImage from "@/assets/ChatImage.png";
@@ -52,7 +55,7 @@ const TechTag: React.FC<{ tech: string }> = ({ tech }) => (
   </span>
 );
 
-// Project data
+// Project data with links
 const projects = [
   {
     id: 1,
@@ -64,6 +67,8 @@ const projects = [
     image: ChatImage,
     imageAlt: "Translalia - AI Poetry Translation",
     tech: ["Next.js", "React", "TypeScript", "Supabase", "GPT-4/5", "Redis"],
+    liveUrl: "#",
+    githubUrl: "https://github.com/RajTrivedi06",
   },
   {
     id: 2,
@@ -75,6 +80,7 @@ const projects = [
     image: CourseSearchImage,
     imageAlt: "MadHelp - AI Course Planning",
     tech: ["FastAPI", "Next.js 15", "OpenAI API", "Python"],
+    githubUrl: "https://github.com/RajTrivedi06",
   },
   {
     id: 3,
@@ -86,6 +92,7 @@ const projects = [
     image: HouseImage,
     imageAlt: "PCB Defect Detection",
     tech: ["Python", "PyTorch", "CNNs"],
+    githubUrl: "https://github.com/RajTrivedi06",
   },
   {
     id: 4,
@@ -132,35 +139,67 @@ const ProjectsPage: React.FC = () => {
               key={project.id}
               className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3"
             >
-              <ShineBorder
-                color="#9B5CFF"
-                borderWidth={1.5}
-                borderRadius={12}
-                className="bg-black flex flex-col rounded-lg overflow-hidden !p-0 h-full"
-              >
-                <img
-                  src={project.image}
-                  alt={project.imageAlt}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="flex-1 px-4 py-4 text-white flex flex-col justify-start">
-                  <div className="flex items-center justify-between mb-2">
-                    <h2 className="text-xl font-bold">{project.title}</h2>
-                    <StatusBadge status={project.status} />
+              <TiltCard tiltAmount={8} glareEnabled={true} className="h-full">
+                <ShineBorder
+                  color="#9B5CFF"
+                  borderWidth={1.5}
+                  borderRadius={12}
+                  className="bg-black flex flex-col rounded-lg overflow-hidden !p-0 h-full group"
+                >
+                  {/* Image with zoom effect */}
+                  <div className="overflow-hidden relative">
+                    <motion.img
+                      src={project.image}
+                      alt={project.imageAlt}
+                      className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    {/* Overlay with links on hover */}
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4">
+                      {project.liveUrl && (
+                        <a
+                          href={project.liveUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-3 bg-purple-500 rounded-full hover:bg-purple-400 transition-colors"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <ExternalLink className="h-5 w-5 text-white" />
+                        </a>
+                      )}
+                      {project.githubUrl && (
+                        <a
+                          href={project.githubUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-3 bg-gray-700 rounded-full hover:bg-gray-600 transition-colors"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Github className="h-5 w-5 text-white" />
+                        </a>
+                      )}
+                    </div>
                   </div>
-                  <p className="text-sm text-purple-400 mb-2">
-                    {project.subtitle}
-                  </p>
-                  <p className="text-sm text-gray-300 leading-relaxed mb-3">
-                    {project.description}
-                  </p>
-                  <div className="flex flex-wrap gap-1 mt-auto">
-                    {project.tech.map((tech) => (
-                      <TechTag key={tech} tech={tech} />
-                    ))}
+                  <div className="flex-1 px-4 py-4 text-white flex flex-col justify-start">
+                    <div className="flex items-center justify-between mb-2">
+                      <h2 className="text-xl font-bold group-hover:text-purple-300 transition-colors">
+                        {project.title}
+                      </h2>
+                      <StatusBadge status={project.status} />
+                    </div>
+                    <p className="text-sm text-purple-400 mb-2">
+                      {project.subtitle}
+                    </p>
+                    <p className="text-sm text-gray-300 leading-relaxed mb-3">
+                      {project.description}
+                    </p>
+                    <div className="flex flex-wrap gap-1 mt-auto">
+                      {project.tech.map((tech) => (
+                        <TechTag key={tech} tech={tech} />
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </ShineBorder>
+                </ShineBorder>
+              </TiltCard>
             </CarouselItem>
           ))}
         </CarouselContent>

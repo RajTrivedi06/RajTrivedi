@@ -1,54 +1,48 @@
 // src/pages/AboutPage.tsx
-import {
-  HeroParallax,
-  type HeroParallaxItem,
-} from "../components/ui/hero-parallax";
 
-const heroParallaxItems: HeroParallaxItem[] = [
+import {
+  NarrativeTimeline,
+  type TimelineMilestone,
+} from "../components/ui/narrative-timeline";
+
+const milestones: TimelineMilestone[] = [
   {
-    title: "Origin Story",
+    year: "2022",
+    title: "The Spark",
     description:
-      "Chased the hype, stayed for the craft. CS + Data Science at UW-Madison, class of 2026.",
-    demo: "menu",
+      "Discovered the magic of turning ideas into code. Built my first full-stack app and fell in love with the craft.",
+    icon: "rocket",
   },
   {
-    title: "The Bet I'm Making",
+    year: "2023",
+    title: "The Deep Dive",
     description:
-      "Growth engineering blends product, distribution, and systems. The best builders ship with context.",
-    demo: "timeline",
+      "Fell into the AI rabbit hole. Started building tools that think — from ML pipelines to intelligent agents.",
+    icon: "brain",
   },
   {
-    title: "How I Build",
+    year: "2024",
+    title: "The Bet",
     description:
-      "Clarity over confusion. Remove friction before features and make onboarding simple.",
-    demo: "status",
+      "Growth engineering is where technical depth meets business impact. Shipped products that users actually want.",
+    icon: "chart",
   },
   {
-    title: "Bridge Builder",
+    year: "Now",
+    title: "The Build",
     description:
-      "I translate between technical depth and business outcomes, and prototype fast.",
-    demo: "stack",
-  },
-  {
-    title: "Beyond the Code",
-    description:
-      "Sports, music, and the engineering behind iconic fashion pieces.",
-    demo: "emoji",
-  },
-  {
-    title: "Let's Build Something",
-    description:
-      "Open to internships, collaborations, and interesting conversations.",
-    demo: "urgent",
+      "Shipping products designed for people who don't read documentation. No friction, just results.",
+    icon: "zap",
+    highlight: true,
   },
 ];
 
 const AboutPage = () => {
   return (
-    <HeroParallax
-      items={heroParallaxItems}
+    <NarrativeTimeline
+      milestones={milestones}
       title="Behind the Code"
-      description="The short story of how I think, build, and what I am betting on."
+      description="The short story of how I think, build, and what I'm betting on."
     />
   );
 };

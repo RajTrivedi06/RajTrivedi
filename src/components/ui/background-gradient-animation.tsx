@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState, useCallback } from "react";
+import { FloatingParticles } from "./floating-particles";
 
 interface GradientOrb {
   color: string;
@@ -174,6 +175,9 @@ export const BackgroundGradientAnimation = ({
           </filter>
         </defs>
       </svg>
+
+      {/* Floating particles layer */}
+      <FloatingParticles count={25} className="z-[5]" />
 
       {/* Content layer */}
       <div className={cn("relative z-10", className)}>{children}</div>

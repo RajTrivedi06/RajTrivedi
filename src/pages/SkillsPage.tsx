@@ -1,6 +1,7 @@
 // src/pages/SkillsPage.tsx
 
 import React, { useEffect, useState, useRef } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
 import { ShineBorder } from "@/components/ui/shine-border";
 import {
@@ -16,6 +17,7 @@ import {
   Target,
   Layers,
   Brain,
+  ChevronDown,
 } from "lucide-react";
 
 // Animated counter component
@@ -52,11 +54,14 @@ const Counter = ({
   useEffect(() => {
     if (!isVisible) return;
 
+    // Easing function for smoother animation
+    const easeOutExpo = (t: number) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t));
+
     let startTime: number;
     const animate = (currentTime: number) => {
       if (!startTime) startTime = currentTime;
       const progress = Math.min((currentTime - startTime) / duration, 1);
-      setCount(Math.floor(progress * target));
+      setCount(Math.floor(easeOutExpo(progress) * target));
       if (progress < 1) {
         requestAnimationFrame(animate);
       }
@@ -120,54 +125,83 @@ const TypingText = ({
   return (
     <span ref={ref} className={className}>
       {displayText}
-      <span className="animate-pulse">|</span>
+      <span className="animate-[blink-cursor_1s_step-end_infinite]">|</span>
     </span>
   );
 };
 
-// Animated skill bar
-const SkillBar = ({
-  label,
-  percentage,
-  delay = 0,
+// Interactive skill data with project connections
+interface SkillData {
+  name: string;
+  experience: string;
+  projects: string[];
+}
+
+const skillsWithProjects: SkillData[] = [
+  {
+    name: "Python",
+    experience: "3 production apps",
+    projects: ["PCB Defect Detection", "ML Pipeline at Attri.AI", "Data ETL Pipelines"],
+  },
+  {
+    name: "TypeScript",
+    experience: "5+ shipped products",
+    projects: ["Translalia", "MadHelp", "MyCosmosJobs"],
+  },
+  {
+    name: "React/Next.js",
+    experience: "4 full-stack apps",
+    projects: ["Translalia", "MadHelp", "Portfolio Site"],
+  },
+  {
+    name: "SQL/PostgreSQL",
+    experience: "Database design",
+    projects: ["MadHelp", "MyCosmosJobs", "Attri.AI"],
+  },
+  {
+    name: "AI/ML",
+    experience: "ML pipelines",
+    projects: ["Translalia", "PCB Detection", "Trademark Similarity"],
+  },
+];
+
+// Interactive Skill Pill Component
+const InteractiveSkillPill = ({
+  skill,
+  isActive,
+  onClick,
 }: {
-  label: string;
-  percentage: number;
-  delay?: number;
+  skill: SkillData;
+  isActive: boolean;
+  onClick: () => void;
 }) => {
-  const [width, setWidth] = useState(0);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => setWidth(percentage), delay);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
-    return () => observer.disconnect();
-  }, [percentage, delay]);
-
   return (
-    <div ref={ref} className="space-y-1">
-      <div className="flex justify-between text-xs text-gray-400">
-        <span>{label}</span>
-        <span>{percentage}%</span>
-      </div>
-      <div className="h-1.5 w-full rounded-full bg-white/10 overflow-hidden">
-        <div
-          className="h-full rounded-full bg-gradient-to-r from-purple-500 to-purple-400 transition-all duration-1000 ease-out"
-          style={{ width: `${width}%` }}
-        />
-      </div>
-    </div>
+    <motion.button
+      onClick={onClick}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      className={cn(
+        "px-4 py-2 rounded-full border text-left transition-all duration-200",
+        "flex items-center gap-2 group",
+        isActive
+          ? "bg-purple-500 border-purple-500 text-white shadow-lg shadow-purple-500/25"
+          : "border-gray-600 text-gray-300 hover:border-purple-400 hover:bg-purple-500/10"
+      )}
+    >
+      <span className="font-medium text-sm">{skill.name}</span>
+      <span className={cn(
+        "text-xs opacity-70",
+        isActive ? "text-purple-100" : "text-gray-500"
+      )}>
+        {skill.experience}
+      </span>
+      <ChevronDown 
+        className={cn(
+          "h-3 w-3 transition-transform duration-200 ml-auto",
+          isActive ? "rotate-180" : ""
+        )}
+      />
+    </motion.button>
   );
 };
 
@@ -281,31 +315,63 @@ const StatsCard = () => (
   </BentoCard>
 );
 
-// Languages Card
-const LanguagesCard = () => {
-  const languages = [
-    { name: "Python", level: 95 },
-    { name: "TypeScript", level: 90 },
-    { name: "Java", level: 85 },
-    { name: "SQL", level: 80 },
-  ];
+// Interactive Skills Card with project connections
+const InteractiveSkillsCard = () => {
+  const [activeSkill, setActiveSkill] = useState<string | null>(null);
+
+  const handleSkillClick = (skillName: string) => {
+    setActiveSkill(activeSkill === skillName ? null : skillName);
+  };
+
+  const activeSkillData = skillsWithProjects.find(s => s.name === activeSkill);
 
   return (
-    <BentoCard className="flex flex-col">
+    <BentoCard className="flex flex-col !overflow-visible" shine>
       <div className="flex items-center gap-2 mb-4">
         <Code2 className="h-4 w-4 text-purple-400" />
-        <span className="text-sm font-medium text-white">Languages</span>
+        <span className="text-sm font-medium text-white">Skills & Projects</span>
       </div>
-      <div className="space-y-3 flex-1">
-        {languages.map((lang, i) => (
-          <SkillBar
-            key={lang.name}
-            label={lang.name}
-            percentage={lang.level}
-            delay={i * 150}
+      <p className="text-xs text-gray-500 mb-3">Click a skill to see projects</p>
+      
+      <div className="flex flex-wrap gap-2 mb-3">
+        {skillsWithProjects.map((skill) => (
+          <InteractiveSkillPill
+            key={skill.name}
+            skill={skill}
+            isActive={activeSkill === skill.name}
+            onClick={() => handleSkillClick(skill.name)}
           />
         ))}
       </div>
+
+      {/* Related projects panel */}
+      <AnimatePresence>
+        {activeSkillData && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="bg-purple-500/10 rounded-xl p-3 border border-purple-500/20">
+              <p className="text-xs text-purple-300 mb-2">
+                Projects using {activeSkillData.name}:
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {activeSkillData.projects.map((project) => (
+                  <span
+                    key={project}
+                    className="px-2 py-1 bg-purple-500/20 rounded-lg text-xs text-purple-200"
+                  >
+                    {project}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </BentoCard>
   );
 };
@@ -493,17 +559,19 @@ const SkillsPage: React.FC = () => {
           </div>
 
           {/* Row 2 */}
-          <div className="min-h-[220px] opacity-0 animate-fade-in-up bento-card-4">
-            <LanguagesCard />
+          <div className="sm:col-span-2 lg:col-span-2 min-h-[220px] opacity-0 animate-fade-in-up bento-card-4">
+            <InteractiveSkillsCard />
           </div>
           <div className="min-h-[220px] opacity-0 animate-fade-in-up bento-card-5">
-            <FrameworksCard />
-          </div>
-          <div className="min-h-[220px] opacity-0 animate-fade-in-up bento-card-6">
             <FocusAreasCard />
           </div>
-          <div className="min-h-[220px] opacity-0 animate-fade-in-up bento-card-7">
+          <div className="min-h-[220px] opacity-0 animate-fade-in-up bento-card-6">
             <InterpersonalCard />
+          </div>
+
+          {/* Row 3 */}
+          <div className="sm:col-span-2 lg:col-span-2 min-h-[180px] opacity-0 animate-fade-in-up bento-card-7">
+            <FrameworksCard />
           </div>
         </div>
 
