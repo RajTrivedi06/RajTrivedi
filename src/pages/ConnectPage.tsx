@@ -72,12 +72,15 @@ const ConnectPage: React.FC = () => {
           realities.
         </p>
 
-        {/* Open to section */}
+        {/* Open to section — <mark> gives the list a machine-readable
+            emphasis so assistive tech doesn't treat the color-only cue as
+            plain prose (audit 02b V2). bg-transparent preserves the
+            existing visual treatment. */}
         <p className="text-gray-400 text-base mb-8">
           Currently open to:{" "}
-          <span className="text-purple-400">
+          <mark className="bg-transparent text-purple-400">
             internships, collaborations, interesting conversations
-          </span>
+          </mark>
         </p>
 
         {/* Contact options row */}
@@ -91,16 +94,21 @@ const ConnectPage: React.FC = () => {
               flex flex-col items-center gap-2
               p-4
               bg-black
-              border border-gray-600
+              border border-gray-500
               rounded-lg
               hover:bg-gray-800
               hover:border-purple-500
               transition
               group
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black
             "
-            title="Email"
+            title="Email Raj"
+            aria-label="Email Raj"
           >
-            <EnvelopeClosedIcon className="w-6 h-6 group-hover:text-purple-400 transition-colors" />
+            <EnvelopeClosedIcon
+              aria-hidden="true"
+              className="w-6 h-6 group-hover:text-purple-400 transition-colors"
+            />
             <span className="text-xs text-gray-400 group-hover:text-white transition-colors">
               Email
             </span>
@@ -117,16 +125,21 @@ const ConnectPage: React.FC = () => {
               flex flex-col items-center gap-2
               p-4
               bg-black
-              border border-gray-600
+              border border-gray-500
               rounded-lg
               hover:bg-gray-800
               hover:border-purple-500
               transition
               group
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black
             "
-            title="GitHub"
+            title="Visit Raj's GitHub profile"
+            aria-label="Visit Raj's GitHub profile"
           >
-            <GitHubLogoIcon className="w-6 h-6 group-hover:text-purple-400 transition-colors" />
+            <GitHubLogoIcon
+              aria-hidden="true"
+              className="w-6 h-6 group-hover:text-purple-400 transition-colors"
+            />
             <span className="text-xs text-gray-400 group-hover:text-white transition-colors">
               GitHub
             </span>
@@ -143,16 +156,21 @@ const ConnectPage: React.FC = () => {
               flex flex-col items-center gap-2
               p-4
               bg-black
-              border border-gray-600
+              border border-gray-500
               rounded-lg
               hover:bg-gray-800
               hover:border-purple-500
               transition
               group
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black
             "
-            title="LinkedIn"
+            title="Connect on LinkedIn"
+            aria-label="Connect on LinkedIn"
           >
-            <LinkedInLogoIcon className="w-6 h-6 group-hover:text-purple-400 transition-colors" />
+            <LinkedInLogoIcon
+              aria-hidden="true"
+              className="w-6 h-6 group-hover:text-purple-400 transition-colors"
+            />
             <span className="text-xs text-gray-400 group-hover:text-white transition-colors">
               LinkedIn
             </span>
@@ -163,12 +181,13 @@ const ConnectPage: React.FC = () => {
               MagneticButton with as="a" href="/<file>.pdf" download. */}
         </div>
 
-        {/* Email display */}
-        <p className="text-gray-500 text-sm">
+        {/* Email display — gray-500 failed AA on black (4.34:1); gray-400
+            is 8.27:1 (audit 02a Table 1). */}
+        <p className="text-gray-400 text-sm">
           Or email me directly at{" "}
           <a
             href="mailto:rajtri286@gmail.com"
-            className="text-purple-400 hover:text-purple-300 underline"
+            className="text-purple-400 hover:text-purple-300 underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-sm"
           >
             rajtri286@gmail.com
           </a>
