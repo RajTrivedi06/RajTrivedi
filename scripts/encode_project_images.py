@@ -20,7 +20,6 @@ TARGET_RATIO = TARGET_W / TARGET_H
 JOBS = [
     ("ChatImage.png", "translalia"),
     ("coursesearchAI.jpg", "coursesearch"),
-    (os.path.join("projects", "pcb_defect_source.png"), "pcb_defect"),
     ("connectcablesimage.jpg", "mycosmosjobs"),
 ]
 

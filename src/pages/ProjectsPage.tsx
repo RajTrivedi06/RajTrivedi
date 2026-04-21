@@ -15,8 +15,6 @@ import TranslaliaAvif from "@/assets/projects/translalia.avif";
 import TranslaliaWebp from "@/assets/projects/translalia.webp";
 import CourseSearchAvif from "@/assets/projects/coursesearch.avif";
 import CourseSearchWebp from "@/assets/projects/coursesearch.webp";
-import PcbDefectAvif from "@/assets/projects/pcb_defect.avif";
-import PcbDefectWebp from "@/assets/projects/pcb_defect.webp";
 import MyCosmosJobsAvif from "@/assets/projects/mycosmosjobs.avif";
 import MyCosmosJobsWebp from "@/assets/projects/mycosmosjobs.webp";
 
@@ -52,7 +50,16 @@ const TechTag: React.FC<{ tech: string }> = ({ tech }) => (
   </span>
 );
 
-// Project data with links
+// Project data with links.
+//
+// `liveUrl` and `githubUrl` both use `string | null | undefined`:
+// - `string`  → render the affordance.
+// - `null`    → explicit "no repo / no public site for this project yet"
+//               (distinct from the field being missing; the null signals
+//               we considered the decision, not that we forgot).
+// - absent    → same effect as null at render time.
+// The JSX renders a control only when the value is a non-empty string,
+// so projects with no URLs simply ship with no external-link buttons.
 interface Project {
   id: number;
   title: string;
@@ -63,8 +70,8 @@ interface Project {
   imageWebp: string;
   imageAlt: string;
   tech: string[];
-  liveUrl?: string;
-  githubUrl?: string;
+  liveUrl?: string | null;
+  githubUrl?: string | null;
 }
 
 const projects: Project[] = [
@@ -80,9 +87,11 @@ const projects: Project[] = [
     imageAlt: "Translalia - AI Poetry Translation",
     tech: ["Next.js", "React", "TypeScript", "Supabase", "GPT-4/5", "Redis"],
     // liveUrl intentionally omitted — the public site isn't deployed yet.
-    // The conditional render at line ~163 hides the "Live" button when
-    // this field is absent (audit 02c V3).
-    githubUrl: "https://github.com/RajTrivedi06",
+    // githubUrl explicitly null — the repo isn't public yet (was previously
+    // pointing at the profile root, which the 02c audit flagged as an
+    // ambiguous link shared across multiple projects).
+    liveUrl: null,
+    githubUrl: null,
   },
   {
     id: 2,
@@ -95,24 +104,10 @@ const projects: Project[] = [
     imageWebp: CourseSearchWebp,
     imageAlt: "MadHelp - AI Course Planning",
     tech: ["FastAPI", "Next.js 15", "OpenAI API", "Python"],
-    githubUrl: "https://github.com/RajTrivedi06",
+    githubUrl: null,
   },
   {
     id: 3,
-    title: "PCB Defect Detection",
-    status: "completed",
-    subtitle: "Neural Networks Project",
-    description:
-      "Machine learning system for detecting defects in printed circuit boards using various neural network architectures including CNNs. Built as part of ECE/CS/ME 539 coursework.",
-    imageAvif: PcbDefectAvif,
-    imageWebp: PcbDefectWebp,
-    imageAlt:
-      "Annotated PCB with neural-network bounding boxes highlighting a solder short and a missing pad",
-    tech: ["Python", "PyTorch", "CNNs"],
-    githubUrl: "https://github.com/RajTrivedi06",
-  },
-  {
-    id: 4,
     title: "MyCosmosJobs",
     status: "development",
     subtitle: "Cosmos Manpower Pvt. Ltd.",
