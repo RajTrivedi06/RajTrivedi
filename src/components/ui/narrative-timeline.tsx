@@ -48,14 +48,24 @@ const MilestoneCard = ({
   const cardContent = (
     <div
       className={cn(
-        "relative bg-gray-900/80 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6",
-        "hover:border-purple-500/50 transition-all duration-300",
+        // border bumped from gray-700/50 (~1.6:1 on gray-900) to
+        // purple-500/40 (~3.2:1) to meet §1.4.11 (audit 02a).
+        "relative bg-gray-900/80 backdrop-blur-sm border border-purple-500/40 rounded-2xl p-6",
+        "hover:border-purple-500/70 transition-all duration-300",
         "group cursor-default",
       )}
     >
-      {/* Year badge */}
-      <span className="inline-block px-3 py-1 text-xs font-mono text-purple-400 bg-purple-500/10 rounded-full mb-3">
-        {milestone.year}
+      {/* Year badge — paired with a "Current" text badge on the highlight
+          milestone so color is not the only differentiator (audit 02b V1). */}
+      <span className="inline-flex items-center gap-2 mb-3">
+        <span className="inline-block px-3 py-1 text-xs font-mono text-purple-400 bg-purple-500/10 rounded-full">
+          {milestone.year}
+        </span>
+        {milestone.highlight && (
+          <span className="inline-block px-2 py-1 text-xs font-semibold uppercase tracking-wider text-white bg-pink-500/90 rounded-full">
+            Current
+          </span>
+        )}
       </span>
 
       {/* Title */}
@@ -73,9 +83,18 @@ const MilestoneCard = ({
     </div>
   );
 
+  // A 2px ring on the highlighted bubble is the non-color differentiator
+  // (audit 02b V1) paired with the "Current" text badge rendered in
+  // cardContent above. aria-current="step" announces the same thing to
+  // assistive tech.
+  const ariaCurrent = milestone.highlight ? ("step" as const) : undefined;
+
   if (shouldReduceMotion) {
     return (
-      <div className="flex items-start mb-12 last:mb-0">
+      <div
+        aria-current={ariaCurrent}
+        className="flex items-start mb-12 last:mb-0"
+      >
         <div
           className={cn(
             "w-5/12",
@@ -85,7 +104,14 @@ const MilestoneCard = ({
           {cardContent}
         </div>
         <div className="relative flex flex-col items-center order-2">
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-purple-700 text-white shadow-lg shadow-purple-500/25">
+          <div
+            className={cn(
+              "flex h-14 w-14 items-center justify-center rounded-full text-white shadow-lg",
+              milestone.highlight
+                ? "bg-gradient-to-br from-purple-400 to-pink-500 shadow-pink-500/25 ring-2 ring-white/80 ring-offset-2 ring-offset-black"
+                : "bg-gradient-to-br from-purple-500 to-purple-700 shadow-purple-500/25",
+            )}
+          >
             <Icon className="h-6 w-6" />
           </div>
           {!isLast && (
@@ -98,7 +124,11 @@ const MilestoneCard = ({
   }
 
   return (
-    <div ref={ref} className="flex items-start mb-12 last:mb-0">
+    <div
+      ref={ref}
+      aria-current={ariaCurrent}
+      className="flex items-start mb-12 last:mb-0"
+    >
       {/* Card - alternates sides */}
       <motion.div
         initial={{ opacity: 0, x: isEven ? -50 : 50 }}
@@ -133,7 +163,7 @@ const MilestoneCard = ({
           className={cn(
             "flex h-14 w-14 items-center justify-center rounded-full text-white shadow-lg",
             milestone.highlight
-              ? "bg-gradient-to-br from-purple-400 to-pink-500 shadow-pink-500/25"
+              ? "bg-gradient-to-br from-purple-400 to-pink-500 shadow-pink-500/25 ring-2 ring-white/80 ring-offset-2 ring-offset-black"
               : "bg-gradient-to-br from-purple-500 to-purple-700 shadow-purple-500/25",
           )}
         >
@@ -170,12 +200,33 @@ const MobileMilestoneCard = ({
   const isInView = useInView(ref, { once: true, margin: "-50px" });
   const shouldReduceMotion = useReducedMotion();
   const Icon = iconMap[milestone.icon];
+  const ariaCurrent = milestone.highlight ? ("step" as const) : undefined;
+
+  const yearRow = (
+    <span className="inline-flex items-center gap-2 mb-2">
+      <span className="inline-block px-2 py-0.5 text-xs font-mono text-purple-400 bg-purple-500/10 rounded-full">
+        {milestone.year}
+      </span>
+      {milestone.highlight && (
+        <span className="inline-block px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-white bg-pink-500/90 rounded-full">
+          Current
+        </span>
+      )}
+    </span>
+  );
 
   if (shouldReduceMotion) {
     return (
-      <div className="flex gap-4 mb-8 last:mb-0">
+      <div aria-current={ariaCurrent} className="flex gap-4 mb-8 last:mb-0">
         <div className="flex flex-col items-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-purple-700 text-white shadow-lg">
+          <div
+            className={cn(
+              "flex h-12 w-12 items-center justify-center rounded-full text-white shadow-lg",
+              milestone.highlight
+                ? "bg-gradient-to-br from-purple-400 to-pink-500 shadow-pink-500/25 ring-2 ring-white/80 ring-offset-2 ring-offset-black"
+                : "bg-gradient-to-br from-purple-500 to-purple-700",
+            )}
+          >
             <Icon className="h-5 w-5" />
           </div>
           {!isLast && (
@@ -183,9 +234,7 @@ const MobileMilestoneCard = ({
           )}
         </div>
         <div className="flex-1 pb-8">
-          <span className="inline-block px-2 py-0.5 text-xs font-mono text-purple-400 bg-purple-500/10 rounded-full mb-2">
-            {milestone.year}
-          </span>
+          {yearRow}
           <h3 className="text-lg font-bold text-white mb-1">
             {milestone.title}
           </h3>
@@ -198,6 +247,7 @@ const MobileMilestoneCard = ({
   return (
     <motion.div
       ref={ref}
+      aria-current={ariaCurrent}
       initial={{ opacity: 0, y: 30 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -209,7 +259,7 @@ const MobileMilestoneCard = ({
           className={cn(
             "flex h-12 w-12 items-center justify-center rounded-full text-white shadow-lg",
             milestone.highlight
-              ? "bg-gradient-to-br from-purple-400 to-pink-500 shadow-pink-500/25"
+              ? "bg-gradient-to-br from-purple-400 to-pink-500 shadow-pink-500/25 ring-2 ring-white/80 ring-offset-2 ring-offset-black"
               : "bg-gradient-to-br from-purple-500 to-purple-700 shadow-purple-500/25",
           )}
         >
@@ -225,9 +275,7 @@ const MobileMilestoneCard = ({
         )}
       </div>
       <div className="flex-1 pb-8">
-        <span className="inline-block px-2 py-0.5 text-xs font-mono text-purple-400 bg-purple-500/10 rounded-full mb-2">
-          {milestone.year}
-        </span>
+        {yearRow}
         <h3 className="text-lg font-bold text-white mb-1">{milestone.title}</h3>
         <p className="text-sm text-gray-400">{milestone.description}</p>
       </div>
