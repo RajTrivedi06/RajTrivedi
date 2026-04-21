@@ -10,6 +10,7 @@ import {
 } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useLocation } from "react-router-dom";
+import { useSmoothScroll } from "@/providers/SmoothScrollProvider";
 
 interface TransitionContextType {
   startTransition: () => void;
@@ -31,9 +32,15 @@ interface PageTransitionProps {
 
 export const PageTransition = ({ children }: PageTransitionProps) => {
   const location = useLocation();
+  const { lenis } = useSmoothScroll();
   const [isExiting, setIsExiting] = useState(false);
   const previousPathRef = useRef<string>(location.pathname);
   const transitionTriggeredRef = useRef(false);
+  // Keep the latest Lenis instance in a ref so the transition-completion
+  // callback reads the current value without forcing the effect to re-run
+  // on every SmoothScrollProvider re-render (which happens on every scroll).
+  const lenisRef = useRef(lenis);
+  lenisRef.current = lenis;
 
   const startTransition = () => {
     transitionTriggeredRef.current = true;
@@ -50,13 +57,14 @@ export const PageTransition = ({ children }: PageTransitionProps) => {
           transitionTriggeredRef.current = false;
           previousPathRef.current = location.pathname;
 
-          // Scroll to top immediately after transition
-          window.scrollTo({ top: 0, behavior: "instant" });
-
-          // Also ensure smooth scroll is at top
-          const lenis = (window as any).lenis;
-          if (lenis) {
-            lenis.scrollTo(0, { immediate: true });
+          // Reset scroll to top after transition. Prefer Lenis so its
+          // internal state resets in sync with the DOM scroll position;
+          // fall back to native scrollTo if Lenis hasn't mounted yet.
+          const activeLenis = lenisRef.current;
+          if (activeLenis) {
+            activeLenis.scrollTo(0, { immediate: true });
+          } else {
+            window.scrollTo({ top: 0, behavior: "instant" });
           }
         }, 600);
 
