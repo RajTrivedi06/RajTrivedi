@@ -10,5 +10,4 @@ export {
   ScrollNavigationProvider,
   useScrollNavigation,
 } from "./ScrollNavigationProvider";
-export { PerformanceProvider, usePerformance } from "./PerformanceProvider";
 export type { Section } from "./ScrollNavigationProvider";

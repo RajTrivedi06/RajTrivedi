@@ -1,7 +1,5 @@
 // src/config/animations.ts
 
-import { PerformanceTier } from "./performance";
-
 // Easing functions
 export const EASINGS = {
   // Standard easings
@@ -152,17 +150,6 @@ export const MOTION_VARIANTS = {
       },
     },
   },
-};
-
-// Get timing configuration based on performance tier
-export const getTimingForTier = (tier: PerformanceTier) => {
-  const multiplier = tier === "high" ? 1 : tier === "medium" ? 0.7 : 0;
-
-  return {
-    duration: (base: number) => base * multiplier,
-    delay: (base: number) => base * multiplier,
-    scrub: tier === "low" ? false : tier === "medium" ? 0.3 : 0.5,
-  };
 };
 
 // Tuning values for easy adjustment

@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { ScrollDebug } from "./components/ScrollDebug";
 import { PageTransition } from "./components/PageTransition";
 import SingleScrollPage from "./pages/SingleScrollPage";
 
@@ -32,14 +31,9 @@ function App() {
   }, []);
 
   return (
-    <>
-      <PageTransition>
-        <AppRoutes />
-      </PageTransition>
-
-      {/* Debug component - disabled for cleaner view */}
-      <ScrollDebug enabled={false} />
-    </>
+    <PageTransition>
+      <AppRoutes />
+    </PageTransition>
   );
 }
 

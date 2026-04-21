@@ -4,7 +4,6 @@ import { ReactNode } from "react";
 import { SmoothScrollProvider } from "./SmoothScrollProvider";
 import { ScrollTriggerProvider } from "./ScrollTriggerProvider";
 import { ScrollNavigationProvider, Section } from "./ScrollNavigationProvider";
-import { PerformanceProvider } from "./PerformanceProvider";
 
 interface ScrollProviderProps {
   children: ReactNode;
@@ -24,22 +23,20 @@ export const ScrollProvider = ({
   sections = DEFAULT_SECTIONS,
 }: ScrollProviderProps) => {
   return (
-    <PerformanceProvider>
-      <SmoothScrollProvider
-        options={{
-          duration: 1.2,
-          smoothWheel: true,
-          syncTouch: false,
-          touchMultiplier: 2,
-        }}
-      >
-        <ScrollTriggerProvider>
-          <ScrollNavigationProvider sections={sections} navOffset={80}>
-            {children}
-          </ScrollNavigationProvider>
-        </ScrollTriggerProvider>
-      </SmoothScrollProvider>
-    </PerformanceProvider>
+    <SmoothScrollProvider
+      options={{
+        duration: 1.2,
+        smoothWheel: true,
+        syncTouch: false,
+        touchMultiplier: 2,
+      }}
+    >
+      <ScrollTriggerProvider>
+        <ScrollNavigationProvider sections={sections} navOffset={80}>
+          {children}
+        </ScrollNavigationProvider>
+      </ScrollTriggerProvider>
+    </SmoothScrollProvider>
   );
 };
 
