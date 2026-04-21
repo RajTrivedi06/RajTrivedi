@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-import { motion } from "motion/react";
+import React from "react";
 import { ShineBorder } from "@/components/ui/shine-border";
 import { TiltCard } from "@/components/ui/tilt-card";
 import {
@@ -11,19 +10,15 @@ import {
 } from "@/components/ui/carousel";
 import { ExternalLink, Github } from "lucide-react";
 
-// Images (using existing images as placeholders)
-import ChatImage from "@/assets/ChatImage.png";
-import HouseImage from "@/assets/houseimage.png";
-import CourseSearchImage from "@/assets/coursesearchAI.jpg";
-import ConnectCablesImage from "@/assets/connectcablesimage.jpg";
-
-// Preload images into the cache
-const preloadImages = (srcs: string[]) => {
-  srcs.forEach((src) => {
-    const img = new Image();
-    img.src = src;
-  });
-};
+// Project images: 800×384 (2× the 400×192 render size), AVIF with WebP fallback.
+import TranslaliaAvif from "@/assets/projects/translalia.avif";
+import TranslaliaWebp from "@/assets/projects/translalia.webp";
+import CourseSearchAvif from "@/assets/projects/coursesearch.avif";
+import CourseSearchWebp from "@/assets/projects/coursesearch.webp";
+import PcbDefectAvif from "@/assets/projects/pcb_defect.avif";
+import PcbDefectWebp from "@/assets/projects/pcb_defect.webp";
+import MyCosmosJobsAvif from "@/assets/projects/mycosmosjobs.avif";
+import MyCosmosJobsWebp from "@/assets/projects/mycosmosjobs.webp";
 
 // Status badge component
 const StatusBadge: React.FC<{
@@ -64,7 +59,8 @@ const projects = [
     subtitle: "Oxford University AIDCPT Project",
     description:
       "AI poetry-translation workspace for students (ages 12-16) focused on translator agency and cultural nuance. Features preference-driven prompting generating multiple translation variants across language varieties.",
-    image: ChatImage,
+    imageAvif: TranslaliaAvif,
+    imageWebp: TranslaliaWebp,
     imageAlt: "Translalia - AI Poetry Translation",
     tech: ["Next.js", "React", "TypeScript", "Supabase", "GPT-4/5", "Redis"],
     liveUrl: "#",
@@ -77,7 +73,8 @@ const projects = [
     subtitle: "AI Course Planning Assistant",
     description:
       "Full-stack AI-powered course planning assistant for UW-Madison students. Features intelligent course recommendations, research lab matching, and interactive prerequisite graph visualization. Semantic search across 200+ labs and thousands of courses.",
-    image: CourseSearchImage,
+    imageAvif: CourseSearchAvif,
+    imageWebp: CourseSearchWebp,
     imageAlt: "MadHelp - AI Course Planning",
     tech: ["FastAPI", "Next.js 15", "OpenAI API", "Python"],
     githubUrl: "https://github.com/RajTrivedi06",
@@ -89,8 +86,10 @@ const projects = [
     subtitle: "Neural Networks Project",
     description:
       "Machine learning system for detecting defects in printed circuit boards using various neural network architectures including CNNs. Built as part of ECE/CS/ME 539 coursework.",
-    image: HouseImage,
-    imageAlt: "PCB Defect Detection",
+    imageAvif: PcbDefectAvif,
+    imageWebp: PcbDefectWebp,
+    imageAlt:
+      "Annotated PCB with neural-network bounding boxes highlighting a solder short and a missing pad",
     tech: ["Python", "PyTorch", "CNNs"],
     githubUrl: "https://github.com/RajTrivedi06",
   },
@@ -101,23 +100,14 @@ const projects = [
     subtitle: "Cosmos Manpower Pvt. Ltd.",
     description:
       "Full-stack job portal rebuild with automated data pipelines, ETL processes, and digital marketing automation tools for high-volume recruitment operations in Gujarat, India.",
-    image: ConnectCablesImage,
+    imageAvif: MyCosmosJobsAvif,
+    imageWebp: MyCosmosJobsWebp,
     imageAlt: "MyCosmosJobs Portal",
     tech: ["Full-Stack", "ETL", "Automation"],
   },
 ];
 
 const ProjectsPage: React.FC = () => {
-  useEffect(() => {
-    // Preload all images
-    preloadImages([
-      ChatImage,
-      HouseImage,
-      CourseSearchImage,
-      ConnectCablesImage,
-    ]);
-  }, []);
-
   return (
     <div className="relative min-h-screen w-full text-white px-4 py-8 sm:px-8 sm:py-12">
       {/* Heading */}
@@ -134,7 +124,11 @@ const ProjectsPage: React.FC = () => {
         className="w-full max-w-7xl mx-auto"
       >
         <CarouselContent className="-ml-2 md:-ml-4">
-          {projects.map((project) => (
+          {projects.map((project, index) => {
+            // First card is visible on initial render across all breakpoints,
+            // so it gets fetchpriority=high + eager. The rest lazy-load.
+            const isAboveFold = index === 0;
+            return (
             <CarouselItem
               key={project.id}
               className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3"
@@ -148,11 +142,22 @@ const ProjectsPage: React.FC = () => {
                 >
                   {/* Image with zoom effect */}
                   <div className="overflow-hidden relative">
-                    <motion.img
-                      src={project.image}
-                      alt={project.imageAlt}
-                      className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
+                    <picture>
+                      <source srcSet={project.imageAvif} type="image/avif" />
+                      <source srcSet={project.imageWebp} type="image/webp" />
+                      <img
+                        src={project.imageWebp}
+                        alt={project.imageAlt}
+                        width={800}
+                        height={384}
+                        loading={isAboveFold ? "eager" : "lazy"}
+                        decoding="async"
+                        {...(isAboveFold
+                          ? { fetchPriority: "high" as const }
+                          : {})}
+                        className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                    </picture>
                     {/* Overlay with links on hover */}
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4">
                       {project.liveUrl && (
@@ -201,7 +206,8 @@ const ProjectsPage: React.FC = () => {
                 </ShineBorder>
               </TiltCard>
             </CarouselItem>
-          ))}
+            );
+          })}
         </CarouselContent>
         <CarouselPrevious className="text-white border-white/20 hover:bg-white/10 bg-black/50 backdrop-blur-sm left-2 sm:-left-12" />
         <CarouselNext className="text-white border-white/20 hover:bg-white/10 bg-black/50 backdrop-blur-sm right-2 sm:-right-12" />

@@ -19,7 +19,7 @@ export default defineConfig({
           // Vendor chunks
           "vendor-react": ["react", "react-dom", "react-router-dom"],
           "vendor-animation": ["gsap", "lenis"],
-          "vendor-motion": ["framer-motion"],
+          "vendor-motion": ["motion"],
           "vendor-ui": [
             "@radix-ui/react-icons",
             "@radix-ui/react-tooltip",
@@ -45,6 +45,6 @@ export default defineConfig({
   },
   // Optimize dependencies
   optimizeDeps: {
-    include: ["gsap", "lenis", "framer-motion"],
+    include: ["gsap", "lenis", "motion"],
   },
 });
