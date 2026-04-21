@@ -83,7 +83,7 @@ export const SectionIndicator = ({
             whileHover={{ opacity: 1, x: 0 }}
             className={cn(
               "text-xs font-mono whitespace-nowrap transition-colors",
-              activeSection === index ? "text-purple-400" : "text-gray-500"
+              activeSection === index ? "text-purple-400" : "text-gray-400"
             )}
           >
             {section.label}
