@@ -8,7 +8,10 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { useScrollNavigation } from "../providers";
+import {
+  useScrollNavigationActions,
+  useScrollNavigationProgress,
+} from "../providers";
 import { motion, AnimatePresence } from "motion/react";
 import { useState, useEffect } from "react";
 
@@ -31,7 +34,12 @@ const NAV_ITEMS = [
 ];
 
 export function NavDock() {
-  const { activeSection, navigateToSection } = useScrollNavigation();
+  // Actions (stable across frames): navigateToSection.
+  // Progress (per-frame): activeSection — drives the active-dot indicator.
+  // NavDock rerenders on scroll frames because of Progress; that's the
+  // narrowest acceptable subscription given it needs the active id.
+  const { navigateToSection } = useScrollNavigationActions();
+  const { activeSection } = useScrollNavigationProgress();
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);

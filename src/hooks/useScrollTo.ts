@@ -1,7 +1,7 @@
 // src/hooks/useScrollTo.ts
 
 import { useCallback } from "react";
-import { useSmoothScroll } from "../providers";
+import { useSmoothScrollActions } from "../providers";
 
 interface ScrollToOptions {
   offset?: number;
@@ -11,7 +11,9 @@ interface ScrollToOptions {
 }
 
 export const useScrollTo = () => {
-  const { lenis } = useSmoothScroll();
+  // Narrow subscription: lenis only — Actions context identity is stable
+  // across scroll frames, so this hook's consumers don't rerender at 60fps.
+  const { lenis } = useSmoothScrollActions();
 
   const scrollTo = useCallback(
     (target: number | string | HTMLElement, options: ScrollToOptions = {}) => {

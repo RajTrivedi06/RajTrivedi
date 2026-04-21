@@ -10,7 +10,7 @@ import {
 } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useLocation } from "react-router-dom";
-import { useSmoothScroll } from "@/providers/SmoothScrollProvider";
+import { useSmoothScrollActions } from "@/providers/SmoothScrollProvider";
 
 interface TransitionContextType {
   startTransition: () => void;
@@ -32,13 +32,12 @@ interface PageTransitionProps {
 
 export const PageTransition = ({ children }: PageTransitionProps) => {
   const location = useLocation();
-  const { lenis } = useSmoothScroll();
+  // Actions context: lenis identity is stable after mount, so this no
+  // longer rerenders on scroll frames (audit 05 PD2).
+  const { lenis } = useSmoothScrollActions();
   const [isExiting, setIsExiting] = useState(false);
   const previousPathRef = useRef<string>(location.pathname);
   const transitionTriggeredRef = useRef(false);
-  // Keep the latest Lenis instance in a ref so the transition-completion
-  // callback reads the current value without forcing the effect to re-run
-  // on every SmoothScrollProvider re-render (which happens on every scroll).
   const lenisRef = useRef(lenis);
   lenisRef.current = lenis;
 

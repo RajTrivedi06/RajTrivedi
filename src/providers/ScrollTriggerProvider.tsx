@@ -9,7 +9,7 @@ import {
 } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useSmoothScroll } from "./SmoothScrollProvider";
+import { useSmoothScrollActions } from "./SmoothScrollProvider";
 
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
@@ -45,7 +45,7 @@ export const useScrollTrigger = () => {
 export const ScrollTriggerProvider = ({
   children,
 }: ScrollTriggerProviderProps) => {
-  const { lenis } = useSmoothScroll();
+  const { lenis } = useSmoothScrollActions();
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {

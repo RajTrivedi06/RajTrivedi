@@ -1,7 +1,10 @@
 // src/hooks/useKeyboardNavigation.ts
 
 import { useEffect, useCallback } from "react";
-import { useScrollNavigation } from "../providers";
+import {
+  useScrollNavigationActions,
+  useScrollNavigationProgress,
+} from "../providers";
 
 interface UseKeyboardNavigationOptions {
   enabled?: boolean;
@@ -11,7 +14,11 @@ export const useKeyboardNavigation = (
   options: UseKeyboardNavigationOptions = {}
 ) => {
   const { enabled = true } = options;
-  const { sections, activeSection, navigateToSection } = useScrollNavigation();
+  // Actions (stable): sections + navigateToSection.
+  // Progress (60fps): activeSection — this hook's host rerenders on every
+  // scroll frame, so keep its host component small (see KeyboardNavigator).
+  const { sections, navigateToSection } = useScrollNavigationActions();
+  const { activeSection } = useScrollNavigationProgress();
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
