@@ -1,9 +1,9 @@
 // src/pages/SingleScrollPage.tsx
 
 import { useRef, useEffect } from "react";
-import { useScrollNavigation } from "../providers";
-import { useKeyboardNavigation } from "../hooks";
+import { useScrollNavigationActions } from "../providers";
 import NavDock from "../components/NavDock";
+import { KeyboardNavigator } from "../components/KeyboardNavigator";
 import { BackgroundGradientAnimation } from "../components/ui/background-gradient-animation";
 import { ScrollProgress } from "../components/ui/scroll-progress";
 import { SectionIndicator } from "../components/ui/section-indicator";
@@ -16,10 +16,9 @@ import ProjectsPage from "./ProjectsPage";
 import ConnectPage from "./ConnectPage";
 
 export default function SingleScrollPage() {
-  const { registerSectionRef } = useScrollNavigation();
-
-  // Enable keyboard navigation
-  useKeyboardNavigation({ enabled: true });
+  // Actions only — registerSectionRef identity never changes, so this
+  // component no longer rerenders on scroll frames (audit 05 PD1).
+  const { registerSectionRef } = useScrollNavigationActions();
 
   // Section refs
   const homeRef = useRef<HTMLElement>(null);
@@ -48,6 +47,10 @@ export default function SingleScrollPage() {
 
   return (
     <div className="relative w-full">
+      {/* Keyboard navigation — isolated so its per-frame rerender (from
+          reading activeSection) doesn't cascade through the page subtree. */}
+      <KeyboardNavigator />
+
       {/* Scroll Progress Indicator */}
       <ScrollProgress />
 
