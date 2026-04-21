@@ -4,15 +4,22 @@ import {
   createContext,
   useContext,
   useEffect,
-  useRef,
+  useMemo,
   useState,
   ReactNode,
 } from "react";
 import Lenis from "lenis";
 
-// Types
-interface SmoothScrollContextType {
+// Actions: stable, changes only when the Lenis instance itself changes
+// (mount, or options change → effect recreates Lenis). Most consumers
+// (ScrollTriggerProvider, PageTransition, useScrollTo) only need this.
+interface SmoothScrollActions {
   lenis: Lenis | null;
+}
+
+// Progress: 60fps state. Separate context so Actions consumers don't
+// re-render on every scroll frame just because scrollProgress ticked.
+interface SmoothScrollProgress {
   scrollProgress: number;
   scrollDirection: "up" | "down" | null;
   isScrolling: boolean;
@@ -30,36 +37,44 @@ interface SmoothScrollProviderProps {
   };
 }
 
-// Default easing function (ease-out-expo)
 const defaultEasing = (t: number): number => {
   return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
 };
 
-// Context
-const SmoothScrollContext = createContext<SmoothScrollContextType>({
-  lenis: null,
-  scrollProgress: 0,
-  scrollDirection: null,
-  isScrolling: false,
-});
+const SmoothScrollActionsContext = createContext<SmoothScrollActions | null>(
+  null
+);
+const SmoothScrollProgressContext = createContext<SmoothScrollProgress | null>(
+  null
+);
 
-// Hook for consuming the context
-export const useSmoothScroll = () => {
-  const context = useContext(SmoothScrollContext);
-  if (!context) {
+export const useSmoothScrollActions = (): SmoothScrollActions => {
+  const ctx = useContext(SmoothScrollActionsContext);
+  if (!ctx) {
     throw new Error(
-      "useSmoothScroll must be used within a SmoothScrollProvider"
+      "useSmoothScrollActions must be used within a SmoothScrollProvider"
     );
   }
-  return context;
+  return ctx;
 };
 
-// Provider Component
+export const useSmoothScrollProgress = (): SmoothScrollProgress => {
+  const ctx = useContext(SmoothScrollProgressContext);
+  if (!ctx) {
+    throw new Error(
+      "useSmoothScrollProgress must be used within a SmoothScrollProvider"
+    );
+  }
+  return ctx;
+};
+
 export const SmoothScrollProvider = ({
   children,
   options = {},
 }: SmoothScrollProviderProps) => {
-  const lenisRef = useRef<Lenis | null>(null);
+  // Lenis lives in state (not a ref) so the Actions context value can be
+  // memoized against it — ref mutation doesn't invalidate useMemo deps.
+  const [lenis, setLenis] = useState<Lenis | null>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [scrollDirection, setScrollDirection] = useState<"up" | "down" | null>(
     null
@@ -67,13 +82,11 @@ export const SmoothScrollProvider = ({
   const [isScrolling, setIsScrolling] = useState(false);
 
   useEffect(() => {
-    // Check for reduced motion preference
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
-    // Initialize Lenis
-    const lenis = new Lenis({
+    const lenisInstance = new Lenis({
       duration: prefersReducedMotion ? 0 : options.duration ?? 1.2,
       easing: options.easing ?? defaultEasing,
       orientation: options.orientation ?? "vertical",
@@ -82,9 +95,8 @@ export const SmoothScrollProvider = ({
       touchMultiplier: options.touchMultiplier ?? 2,
     });
 
-    lenisRef.current = lenis;
+    setLenis(lenisInstance);
 
-    // Scroll event handler
     const onScroll = ({
       progress,
       direction,
@@ -100,17 +112,15 @@ export const SmoothScrollProvider = ({
       setIsScrolling(true);
     };
 
-    lenis.on("scroll", onScroll);
+    lenisInstance.on("scroll", onScroll);
 
-    // Animation frame loop
     let rafId: number;
     const raf = (time: number) => {
-      lenis.raf(time);
+      lenisInstance.raf(time);
       rafId = requestAnimationFrame(raf);
     };
     rafId = requestAnimationFrame(raf);
 
-    // Scroll stop detection
     let scrollTimeout: ReturnType<typeof setTimeout>;
     const handleScrollStop = () => {
       clearTimeout(scrollTimeout);
@@ -118,14 +128,13 @@ export const SmoothScrollProvider = ({
         setIsScrolling(false);
       }, 150);
     };
-    lenis.on("scroll", handleScrollStop);
+    lenisInstance.on("scroll", handleScrollStop);
 
-    // Cleanup
     return () => {
       cancelAnimationFrame(rafId);
       clearTimeout(scrollTimeout);
-      lenis.destroy();
-      lenisRef.current = null;
+      lenisInstance.destroy();
+      setLenis(null);
     };
   }, [
     options.duration,
@@ -136,17 +145,26 @@ export const SmoothScrollProvider = ({
     options.touchMultiplier,
   ]);
 
+  // Actions value changes identity only when lenis is (re)created.
+  // Consumers of useSmoothScrollActions do NOT re-render on scroll frames.
+  const actionsValue = useMemo<SmoothScrollActions>(
+    () => ({ lenis }),
+    [lenis]
+  );
+
+  // Progress value is a new object every frame by design — its consumers
+  // opt in to 60fps updates.
+  const progressValue = useMemo<SmoothScrollProgress>(
+    () => ({ scrollProgress, scrollDirection, isScrolling }),
+    [scrollProgress, scrollDirection, isScrolling]
+  );
+
   return (
-    <SmoothScrollContext.Provider
-      value={{
-        lenis: lenisRef.current,
-        scrollProgress,
-        scrollDirection,
-        isScrolling,
-      }}
-    >
-      {children}
-    </SmoothScrollContext.Provider>
+    <SmoothScrollActionsContext.Provider value={actionsValue}>
+      <SmoothScrollProgressContext.Provider value={progressValue}>
+        {children}
+      </SmoothScrollProgressContext.Provider>
+    </SmoothScrollActionsContext.Provider>
   );
 };
 

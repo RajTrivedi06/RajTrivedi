@@ -1,6 +1,10 @@
 // src/providers/index.ts
 
-export { SmoothScrollProvider, useSmoothScroll } from "./SmoothScrollProvider";
+export {
+  SmoothScrollProvider,
+  useSmoothScrollActions,
+  useSmoothScrollProgress,
+} from "./SmoothScrollProvider";
 export {
   ScrollTriggerProvider,
   useScrollTrigger,
@@ -8,6 +12,7 @@ export {
 export { ScrollProvider } from "./ScrollProvider";
 export {
   ScrollNavigationProvider,
-  useScrollNavigation,
+  useScrollNavigationActions,
+  useScrollNavigationProgress,
 } from "./ScrollNavigationProvider";
 export type { Section } from "./ScrollNavigationProvider";

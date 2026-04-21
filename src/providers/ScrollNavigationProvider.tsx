@@ -25,23 +25,24 @@ export interface Section {
   icon?: string;
 }
 
-// Context type
-interface ScrollNavigationContextType {
-  // State
-  activeSection: string | null;
+// Actions: stable callbacks + the (stable-by-default) sections array.
+// Identity never changes after mount, so consumers that only use these
+// (e.g. SingleScrollPage's registerSectionRef call) never re-render on
+// scroll frames.
+interface ScrollNavigationActions {
   sections: Section[];
-  sectionProgress: Record<string, number>;
-  isNavigating: boolean;
-
-  // Actions
   navigateToSection: (
     sectionId: string,
     options?: { immediate?: boolean }
   ) => void;
   registerSectionRef: (sectionId: string, ref: RefObject<HTMLElement>) => void;
-
-  // Refs
   getSectionRef: (sectionId: string) => RefObject<HTMLElement> | null;
+}
+
+// Progress: per-frame state. New object every tick — consumers opt in.
+interface ScrollNavigationProgress {
+  activeSection: string | null;
+  sectionProgress: Record<string, number>;
 }
 
 // Default sections configuration
@@ -53,29 +54,37 @@ const DEFAULT_SECTIONS: Section[] = [
   { id: "connect", label: "Connect" },
 ];
 
-// Context
-const ScrollNavigationContext =
-  createContext<ScrollNavigationContextType | null>(null);
+const ScrollNavigationActionsContext =
+  createContext<ScrollNavigationActions | null>(null);
+const ScrollNavigationProgressContext =
+  createContext<ScrollNavigationProgress | null>(null);
 
-// Hook for consuming context
-export const useScrollNavigation = () => {
-  const context = useContext(ScrollNavigationContext);
-  if (!context) {
+export const useScrollNavigationActions = (): ScrollNavigationActions => {
+  const ctx = useContext(ScrollNavigationActionsContext);
+  if (!ctx) {
     throw new Error(
-      "useScrollNavigation must be used within ScrollNavigationProvider"
+      "useScrollNavigationActions must be used within ScrollNavigationProvider"
     );
   }
-  return context;
+  return ctx;
 };
 
-// Provider props
+export const useScrollNavigationProgress = (): ScrollNavigationProgress => {
+  const ctx = useContext(ScrollNavigationProgressContext);
+  if (!ctx) {
+    throw new Error(
+      "useScrollNavigationProgress must be used within ScrollNavigationProvider"
+    );
+  }
+  return ctx;
+};
+
 interface ScrollNavigationProviderProps {
   children: ReactNode;
   sections?: Section[];
   navOffset?: number;
 }
 
-// Provider component
 export const ScrollNavigationProvider = ({
   children,
   sections = DEFAULT_SECTIONS,
@@ -93,7 +102,6 @@ export const ScrollNavigationProvider = ({
   // every ScrollTrigger N times — see audit 05 B2).
   const [registrationVersion, setRegistrationVersion] = useState(0);
 
-  // Register a section ref
   const registerSectionRef = useCallback(
     (sectionId: string, ref: RefObject<HTMLElement>) => {
       sectionRefsMap.current.set(sectionId, ref);
@@ -116,7 +124,6 @@ export const ScrollNavigationProvider = ({
     return configs;
   }, [sections, registrationVersion]);
 
-  // Get a section ref
   const getSectionRef = useCallback(
     (sectionId: string): RefObject<HTMLElement> | null => {
       return sectionRefsMap.current.get(sectionId) || null;
@@ -124,7 +131,7 @@ export const ScrollNavigationProvider = ({
     []
   );
 
-  // Active section detection
+  // Active section detection — updates sectionProgress every frame.
   const { activeSection, sectionProgress } = useActiveSection({
     sections: sectionConfigs,
     offset: navOffset,
@@ -181,20 +188,32 @@ export const ScrollNavigationProvider = ({
     }
   }, [navigateToSection]);
 
+  // Actions identity is stable across scroll frames: it only changes when
+  // `sections` or `navigateToSection` change (both rare — `sections` is
+  // typically the module-level DEFAULT_SECTIONS, navigateToSection depends
+  // only on `scrollTo` and `navOffset`). registerSectionRef and
+  // getSectionRef are useCallback([]) so their identity never changes.
+  const actionsValue = useMemo<ScrollNavigationActions>(
+    () => ({
+      sections,
+      navigateToSection,
+      registerSectionRef,
+      getSectionRef,
+    }),
+    [sections, navigateToSection, registerSectionRef, getSectionRef]
+  );
+
+  const progressValue = useMemo<ScrollNavigationProgress>(
+    () => ({ activeSection, sectionProgress }),
+    [activeSection, sectionProgress]
+  );
+
   return (
-    <ScrollNavigationContext.Provider
-      value={{
-        activeSection,
-        sections,
-        sectionProgress,
-        isNavigating,
-        navigateToSection,
-        registerSectionRef,
-        getSectionRef,
-      }}
-    >
-      {children}
-    </ScrollNavigationContext.Provider>
+    <ScrollNavigationActionsContext.Provider value={actionsValue}>
+      <ScrollNavigationProgressContext.Provider value={progressValue}>
+        {children}
+      </ScrollNavigationProgressContext.Provider>
+    </ScrollNavigationActionsContext.Provider>
   );
 };
 
