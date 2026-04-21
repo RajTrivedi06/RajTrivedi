@@ -25,7 +25,9 @@ const StatusBadge: React.FC<{
   status: "live" | "completed" | "development";
 }> = ({ status }) => {
   const styles = {
-    live: "bg-green-600 text-white",
+    // green-700 (4.65:1) in place of green-600 (3.30:1) to clear AA for
+    // 12px normal text (audit 02a Table 3).
+    live: "bg-green-700 text-white",
     completed: "bg-blue-600 text-white",
     development: "bg-yellow-600 text-black",
   };
@@ -51,11 +53,25 @@ const TechTag: React.FC<{ tech: string }> = ({ tech }) => (
 );
 
 // Project data with links
-const projects = [
+interface Project {
+  id: number;
+  title: string;
+  status: "live" | "completed" | "development";
+  subtitle: string;
+  description: string;
+  imageAvif: string;
+  imageWebp: string;
+  imageAlt: string;
+  tech: string[];
+  liveUrl?: string;
+  githubUrl?: string;
+}
+
+const projects: Project[] = [
   {
     id: 1,
     title: "Translalia",
-    status: "live" as const,
+    status: "live",
     subtitle: "Oxford University AIDCPT Project",
     description:
       "AI poetry-translation workspace for students (ages 12-16) focused on translator agency and cultural nuance. Features preference-driven prompting generating multiple translation variants across language varieties.",
@@ -63,13 +79,15 @@ const projects = [
     imageWebp: TranslaliaWebp,
     imageAlt: "Translalia - AI Poetry Translation",
     tech: ["Next.js", "React", "TypeScript", "Supabase", "GPT-4/5", "Redis"],
-    liveUrl: "#",
+    // liveUrl intentionally omitted — the public site isn't deployed yet.
+    // The conditional render at line ~163 hides the "Live" button when
+    // this field is absent (audit 02c V3).
     githubUrl: "https://github.com/RajTrivedi06",
   },
   {
     id: 2,
     title: "MadHelp",
-    status: "completed" as const,
+    status: "completed",
     subtitle: "AI Course Planning Assistant",
     description:
       "Full-stack AI-powered course planning assistant for UW-Madison students. Features intelligent course recommendations, research lab matching, and interactive prerequisite graph visualization. Semantic search across 200+ labs and thousands of courses.",
@@ -82,7 +100,7 @@ const projects = [
   {
     id: 3,
     title: "PCB Defect Detection",
-    status: "completed" as const,
+    status: "completed",
     subtitle: "Neural Networks Project",
     description:
       "Machine learning system for detecting defects in printed circuit boards using various neural network architectures including CNNs. Built as part of ECE/CS/ME 539 coursework.",
@@ -96,7 +114,7 @@ const projects = [
   {
     id: 4,
     title: "MyCosmosJobs",
-    status: "development" as const,
+    status: "development",
     subtitle: "Cosmos Manpower Pvt. Ltd.",
     description:
       "Full-stack job portal rebuild with automated data pipelines, ETL processes, and digital marketing automation tools for high-volume recruitment operations in Gujarat, India.",
@@ -165,10 +183,14 @@ const ProjectsPage: React.FC = () => {
                           href={project.liveUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="p-3 bg-purple-500 rounded-full hover:bg-purple-400 transition-colors"
+                          aria-label={`Open ${project.title} live site`}
+                          className="p-3 bg-purple-500 rounded-full hover:bg-purple-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <ExternalLink className="h-5 w-5 text-white" />
+                          <ExternalLink
+                            aria-hidden="true"
+                            className="h-5 w-5 text-white"
+                          />
                         </a>
                       )}
                       {project.githubUrl && (
@@ -176,10 +198,14 @@ const ProjectsPage: React.FC = () => {
                           href={project.githubUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="p-3 bg-gray-700 rounded-full hover:bg-gray-600 transition-colors"
+                          aria-label={`View ${project.title} on GitHub`}
+                          className="p-3 bg-gray-700 rounded-full hover:bg-gray-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <Github className="h-5 w-5 text-white" />
+                          <Github
+                            aria-hidden="true"
+                            className="h-5 w-5 text-white"
+                          />
                         </a>
                       )}
                     </div>
