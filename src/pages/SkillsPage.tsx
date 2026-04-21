@@ -167,6 +167,10 @@ const skillsWithProjects: SkillData[] = [
   },
 ];
 
+// Slugify a skill name for use as an HTML id (accordion pair — audit 02c V8).
+const skillPanelId = (name: string) =>
+  `skill-detail-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+
 // Interactive Skill Pill Component
 const InteractiveSkillPill = ({
   skill,
@@ -182,22 +186,30 @@ const InteractiveSkillPill = ({
       onClick={onClick}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
+      aria-expanded={isActive}
+      aria-controls={skillPanelId(skill.name)}
       className={cn(
         "px-4 py-2 rounded-full border text-left transition-all duration-200",
         "flex items-center gap-2 group",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black",
         isActive
-          ? "bg-purple-500 border-purple-500 text-white shadow-lg shadow-purple-500/25"
-          : "border-gray-600 text-gray-300 hover:border-purple-400 hover:bg-purple-500/10"
+          // purple-700 (6.97:1) vs purple-500 (3.96:1) clears AA for 14px
+          // normal text (audit 02a Table 3).
+          ? "bg-purple-700 border-purple-700 text-white shadow-lg shadow-purple-500/25"
+          // gray-500 border (4.34:1) vs gray-600 (2.78:1) clears §1.4.11.
+          : "border-gray-500 text-gray-300 hover:border-purple-400 hover:bg-purple-500/10"
       )}
     >
       <span className="font-medium text-sm">{skill.name}</span>
       <span className={cn(
         "text-xs opacity-70",
-        isActive ? "text-purple-100" : "text-gray-500"
+        // inactive subtext: gray-400 (8.27:1) vs gray-500 (4.34:1).
+        isActive ? "text-purple-100" : "text-gray-400"
       )}>
         {skill.experience}
       </span>
-      <ChevronDown 
+      <ChevronDown
+        aria-hidden="true"
         className={cn(
           "h-3 w-3 transition-transform duration-200 ml-auto",
           isActive ? "rotate-180" : ""
@@ -223,7 +235,7 @@ const BentoCard = ({
     <div
       className={cn(
         "relative h-full w-full overflow-hidden rounded-2xl p-5",
-        "bg-black/60 backdrop-blur-sm border border-white/10",
+        "bg-black/60 backdrop-blur-sm border border-white/25",
         "transition-all duration-300 hover:-translate-y-1 hover:border-purple-500/40",
         "group",
         className
@@ -271,8 +283,8 @@ const EducationCard = () => (
       </p>
       <p className="text-gray-400">Expected: May 2026</p>
     </div>
-    <div className="mt-4 pt-4 border-t border-white/10">
-      <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">
+    <div className="mt-4 pt-4 border-t border-white/25">
+      <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">
         Coursework
       </p>
       <div className="flex flex-wrap gap-1.5">
@@ -311,7 +323,7 @@ const StatsCard = () => (
         <div className="text-2xl font-bold text-purple-400">
           <Counter target={3} suffix="+" />
         </div>
-        <p className="text-xs text-gray-500">Production apps shipped</p>
+        <p className="text-xs text-gray-400">Production apps shipped</p>
       </div>
     </div>
   </BentoCard>
@@ -333,7 +345,7 @@ const InteractiveSkillsCard = () => {
         <Code2 className="h-4 w-4 text-purple-400" />
         <span className="text-sm font-medium text-white">Skills & Projects</span>
       </div>
-      <p className="text-xs text-gray-500 mb-3">Click a skill to see projects</p>
+      <p className="text-xs text-gray-400 mb-3">Click a skill to see projects</p>
       
       <div className="flex flex-wrap gap-2 mb-3">
         {skillsWithProjects.map((skill) => (
@@ -346,10 +358,12 @@ const InteractiveSkillsCard = () => {
         ))}
       </div>
 
-      {/* Related projects panel */}
+      {/* Related projects panel — id pairs with aria-controls on the
+          matching InteractiveSkillPill (audit 02c V8). */}
       <AnimatePresence>
         {activeSkillData && (
           <motion.div
+            id={skillPanelId(activeSkillData.name)}
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
@@ -403,7 +417,7 @@ const FrameworksCard = () => {
         {frameworks.map((fw, index) => (
           <span
             key={fw}
-            className="px-3 py-1.5 bg-white/5 border border-white/10 text-gray-300 rounded-full text-xs hover:bg-purple-500/20 hover:border-purple-500/40 hover:text-white transition-all duration-200 cursor-default"
+            className="px-3 py-1.5 bg-white/5 border border-white/25 text-gray-300 rounded-full text-xs hover:bg-purple-500/20 hover:border-purple-500/40 hover:text-white transition-all duration-200 cursor-default"
             style={{ animationDelay: `${index * 100}ms` }}
           >
             {fw}
@@ -454,7 +468,7 @@ const AICard = () => (
       </span>
     </div>
     <div className="flex-1 flex flex-col justify-center">
-      <p className="text-xs text-gray-500 mb-1">Building with:</p>
+      <p className="text-xs text-gray-400 mb-1">Building with:</p>
       <p className="text-sm font-medium text-white">
         <TypingText text="GPT-4, Claude, Custom Agents" />
       </p>
@@ -516,7 +530,7 @@ const ExperienceCard = ({
         <h3 className="text-base font-semibold text-white leading-tight">
           {role}
         </h3>
-        <p className="text-xs text-gray-500 mt-0.5">{period}</p>
+        <p className="text-xs text-gray-400 mt-0.5">{period}</p>
       </div>
     </div>
     <p className="text-sm text-gray-300 leading-relaxed mb-3 flex-1">
@@ -526,7 +540,7 @@ const ExperienceCard = ({
       {tags.map((tag) => (
         <span
           key={tag}
-          className="px-2 py-0.5 bg-white/5 border border-white/10 text-gray-400 rounded-full text-[0.65rem]"
+          className="px-2 py-0.5 bg-white/5 border border-white/25 text-gray-400 rounded-full text-[0.65rem]"
         >
           {tag}
         </span>
