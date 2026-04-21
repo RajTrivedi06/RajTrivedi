@@ -17,6 +17,14 @@ export const useKeyboardNavigation = (
     (event: KeyboardEvent) => {
       if (!enabled) return;
 
+      // Skip all modifier-key combinations. The user's chord belongs to
+      // the browser or OS (e.g. Cmd+Home = go to top, Shift+ArrowDown =
+      // extend text selection, Ctrl+ArrowDown = jump to end). We only
+      // handle bare keys — never hijack a modifier chord.
+      if (event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) {
+        return;
+      }
+
       // Don't interfere with form inputs
       const target = event.target as HTMLElement;
       if (
@@ -29,12 +37,17 @@ export const useKeyboardNavigation = (
 
       const currentIndex = sections.findIndex((s) => s.id === activeSection);
 
+      // Keyboard-driven navigation is always immediate — do not animate.
+      // Home/End are intentionally *not* handled here; the browser should
+      // retain its native "scroll container top/bottom" behavior.
       switch (event.key) {
         case "ArrowDown":
         case "PageDown":
           event.preventDefault();
           if (currentIndex < sections.length - 1) {
-            navigateToSection(sections[currentIndex + 1].id);
+            navigateToSection(sections[currentIndex + 1].id, {
+              immediate: true,
+            });
           }
           break;
 
@@ -42,18 +55,10 @@ export const useKeyboardNavigation = (
         case "PageUp":
           event.preventDefault();
           if (currentIndex > 0) {
-            navigateToSection(sections[currentIndex - 1].id);
+            navigateToSection(sections[currentIndex - 1].id, {
+              immediate: true,
+            });
           }
-          break;
-
-        case "Home":
-          event.preventDefault();
-          navigateToSection(sections[0].id);
-          break;
-
-        case "End":
-          event.preventDefault();
-          navigateToSection(sections[sections.length - 1].id);
           break;
 
         // Number keys 1-5 for direct section access
@@ -65,7 +70,7 @@ export const useKeyboardNavigation = (
           const index = parseInt(event.key) - 1;
           if (index < sections.length) {
             event.preventDefault();
-            navigateToSection(sections[index].id);
+            navigateToSection(sections[index].id, { immediate: true });
           }
           break;
         }

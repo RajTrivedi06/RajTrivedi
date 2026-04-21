@@ -34,7 +34,10 @@ interface ScrollNavigationContextType {
   isNavigating: boolean;
 
   // Actions
-  navigateToSection: (sectionId: string) => void;
+  navigateToSection: (
+    sectionId: string,
+    options?: { immediate?: boolean }
+  ) => void;
   registerSectionRef: (sectionId: string, ref: RefObject<HTMLElement>) => void;
 
   // Refs
@@ -134,9 +137,11 @@ export const ScrollNavigationProvider = ({
     debounceMs: 150,
   });
 
-  // Navigate to a section
+  // Navigate to a section. `immediate: true` skips the Lenis animation —
+  // used by keyboard navigation so arrow / PageUp/Down / digit keys jump
+  // instantly (motion rule: never animate keyboard-initiated actions).
   const navigateToSection = useCallback(
-    (sectionId: string) => {
+    (sectionId: string, options: { immediate?: boolean } = {}) => {
       const ref = sectionRefsMap.current.get(sectionId);
       if (!ref?.current) {
         console.warn(`Section ref not found for: ${sectionId}`);
@@ -147,7 +152,8 @@ export const ScrollNavigationProvider = ({
 
       scrollTo(ref.current, {
         offset: -navOffset,
-        duration: 1.2,
+        duration: options.immediate ? 0 : 1.2,
+        immediate: options.immediate,
         onComplete: () => {
           // Small delay before re-enabling URL sync
           setTimeout(() => {
