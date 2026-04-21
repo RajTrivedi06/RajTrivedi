@@ -5,6 +5,7 @@ import {
   useContext,
   useRef,
   useState,
+  useMemo,
   useCallback,
   useEffect,
   ReactNode,
@@ -81,31 +82,36 @@ export const ScrollNavigationProvider = ({
   const [isNavigating, setIsNavigating] = useState(false);
   const sectionRefsMap = useRef<Map<string, RefObject<HTMLElement>>>(new Map());
 
-  // Build section configs for useActiveSection
-  const [sectionConfigs, setSectionConfigs] = useState<SectionConfig[]>([]);
+  // Registration version: bumped on each registerSectionRef call.
+  // React 18 batches the N functional-update setStates from N sections
+  // registering in the same commit phase into a single re-render, so
+  // useActiveSection sees exactly one configs-array rebuild per batch
+  // instead of N incremental rebuilds (which would rip down and recreate
+  // every ScrollTrigger N times — see audit 05 B2).
+  const [registrationVersion, setRegistrationVersion] = useState(0);
 
   // Register a section ref
   const registerSectionRef = useCallback(
     (sectionId: string, ref: RefObject<HTMLElement>) => {
       sectionRefsMap.current.set(sectionId, ref);
-
-      // Rebuild section configs
-      const configs: SectionConfig[] = [];
-      sections.forEach((section) => {
-        const sectionRef = sectionRefsMap.current.get(section.id);
-        if (sectionRef) {
-          configs.push({
-            id: section.id,
-            ref: sectionRef,
-            threshold: 0.3,
-          });
-        }
-      });
-
-      setSectionConfigs(configs);
+      setRegistrationVersion((v) => v + 1);
     },
-    [sections]
+    []
   );
+
+  // Derive configs once per registration batch. Stable identity between
+  // renders as long as neither `sections` nor `registrationVersion` change,
+  // which keeps useActiveSection's effect deps from thrashing.
+  const sectionConfigs = useMemo<SectionConfig[]>(() => {
+    const configs: SectionConfig[] = [];
+    sections.forEach((section) => {
+      const sectionRef = sectionRefsMap.current.get(section.id);
+      if (sectionRef) {
+        configs.push({ id: section.id, ref: sectionRef, threshold: 0.3 });
+      }
+    });
+    return configs;
+  }, [sections, registrationVersion]);
 
   // Get a section ref
   const getSectionRef = useCallback(
