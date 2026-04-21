@@ -5,7 +5,6 @@ import {
   GitHubLogoIcon,
   LinkedInLogoIcon,
   EnvelopeClosedIcon,
-  FileTextIcon,
 } from "@radix-ui/react-icons";
 import { BackgroundGradient } from "@/components/ui/background-gradient";
 import { MagneticButton } from "@/components/ui/magnetic-button";
@@ -159,34 +158,9 @@ const ConnectPage: React.FC = () => {
             </span>
           </MagneticButton>
 
-          {/* Resume button (placeholder) */}
-          <MagneticButton
-            as="a"
-            href="#"
-            magneticStrength={0.4}
-            onClick={(e) => {
-              e.preventDefault();
-              alert("Resume download coming soon!");
-            }}
-            className="
-              flex flex-col items-center gap-2
-              p-4
-              bg-black
-              border border-gray-600
-              rounded-lg
-              hover:bg-gray-800
-              hover:border-purple-500
-              transition
-              group
-              cursor-pointer
-            "
-            title="Download Resume"
-          >
-            <FileTextIcon className="w-6 h-6 group-hover:text-purple-400 transition-colors" />
-            <span className="text-xs text-gray-400 group-hover:text-white transition-colors">
-              Resume
-            </span>
-          </MagneticButton>
+          {/* Resume button intentionally omitted until a real résumé file
+              exists. Restoring: drop the PDF into public/ and render a
+              MagneticButton with as="a" href="/<file>.pdf" download. */}
         </div>
 
         {/* Email display */}
