@@ -101,7 +101,7 @@ export function NavDock() {
                       className={cn(
                         "relative w-full h-full flex items-center justify-center rounded-full",
                         "transition-all duration-300 ease-out",
-                        "focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-black/50",
+                        "focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black",
                         isActive
                           ? "text-white"
                           : "text-gray-400 hover:text-white"
