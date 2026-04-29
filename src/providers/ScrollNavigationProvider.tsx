@@ -172,20 +172,26 @@ export const ScrollNavigationProvider = ({
     [scrollTo, navOffset]
   );
 
-  // Handle initial scroll on mount (from URL)
+  // Handle initial scroll on mount (from URL hash, e.g. /RajTrivedi/#projects).
+  // We intentionally only run this once: re-running on every navigateToSection
+  // identity change would re-snap the user to the URL hash mid-scroll.
+  const didInitialScrollRef = useRef(false);
   useEffect(() => {
-    const path = window.location.pathname;
-    const sectionId = path.split("/").pop()?.toLowerCase() || "home";
+    if (didInitialScrollRef.current) return;
 
-    // Only scroll if not already at the section and not on landing page
-    if (sectionId && sectionId !== "rajtrivedi" && sectionId !== "") {
-      // Delay to ensure refs are registered and Lenis is ready
-      const timeoutId = setTimeout(() => {
-        navigateToSection(sectionId);
-      }, 300);
-
-      return () => clearTimeout(timeoutId);
+    const sectionId = window.location.hash.replace(/^#\/?/, "").toLowerCase();
+    if (!sectionId || sectionId === "home") {
+      didInitialScrollRef.current = true;
+      return;
     }
+
+    // Delay to ensure refs are registered and Lenis is ready
+    const timeoutId = setTimeout(() => {
+      navigateToSection(sectionId);
+      didInitialScrollRef.current = true;
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
   }, [navigateToSection]);
 
   // Actions identity is stable across scroll frames: it only changes when

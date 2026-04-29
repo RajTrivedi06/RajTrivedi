@@ -1,7 +1,6 @@
 // src/main.tsx
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { ScrollProvider } from "./providers";
 import { initBrowserFixes } from "./utils/safari-fixes";
@@ -17,10 +16,8 @@ if ("scrollRestoration" in window.history) {
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <BrowserRouter basename="/RajTrivedi/">
-      <ScrollProvider>
-        <App />
-      </ScrollProvider>
-    </BrowserRouter>
+    <ScrollProvider>
+      <App />
+    </ScrollProvider>
   </React.StrictMode>
 );

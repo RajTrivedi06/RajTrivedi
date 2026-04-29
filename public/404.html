@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Raj Trivedi</title>
+    <script>
+      // GitHub Pages SPA fallback for legacy path-based section URLs.
+      // The site now uses hash-based section URLs (e.g. /RajTrivedi/#projects),
+      // but anyone with an old bookmark to /RajTrivedi/Home, /RajTrivedi/About,
+      // etc. would otherwise hit a 404. We rewrite those paths to the
+      // equivalent hash and bounce them to the app's index.
+      (function () {
+        var BASE = "/RajTrivedi/";
+        var path = window.location.pathname;
+        var search = window.location.search || "";
+        var hash = window.location.hash || "";
+
+        // If we're already at the base, there's nothing to rewrite —
+        // just send the user to the app.
+        if (path === BASE || path === BASE.slice(0, -1)) {
+          window.location.replace(BASE + search + hash);
+          return;
+        }
+
+        // Strip the project base so we can extract the leftover segment.
+        var rest = path.indexOf(BASE) === 0 ? path.slice(BASE.length) : path;
+        var firstSegment = rest.replace(/^\/+/, "").split("/")[0] || "";
+        var section = firstSegment.toLowerCase();
+
+        // Known sections become hash anchors; anything else just lands on home.
+        var KNOWN = ["home", "about", "skills", "projects", "connect"];
+        var nextHash =
+          section && KNOWN.indexOf(section) !== -1 ? "#" + section : "";
+
+        window.location.replace(BASE + search + (nextHash || hash));
+      })();
+    </script>
+  </head>
+  <body>
+    <noscript>
+      <p>
+        This page has moved.
+        <a href="/RajTrivedi/">Return to the homepage</a>.
+      </p>
+    </noscript>
+  </body>
+</html>

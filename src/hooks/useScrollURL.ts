@@ -1,7 +1,6 @@
 // src/hooks/useScrollURL.ts
 
 import { useEffect, useCallback, useRef } from "react";
-import { useLocation } from "react-router-dom";
 
 interface UseScrollURLOptions {
   activeSection: string | null;
@@ -9,63 +8,58 @@ interface UseScrollURLOptions {
   debounceMs?: number;
 }
 
+// Read the current section id from `window.location.hash`. We strip a leading
+// "#" and an optional leading "/" so both `#home` and `#/home` are accepted.
+const readHashSection = (): string => {
+  if (typeof window === "undefined") return "";
+  const raw = window.location.hash.replace(/^#\/?/, "");
+  return raw.toLowerCase();
+};
+
 export const useScrollURL = (options: UseScrollURLOptions) => {
   const { activeSection, enabled = true, debounceMs = 100 } = options;
-  const location = useLocation();
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const lastUpdateRef = useRef<string | null>(null);
 
-  // Convert section ID to route path
-  const sectionToPath = useCallback((sectionId: string): string => {
-    // Capitalize first letter to match route convention
-    const path = sectionId.charAt(0).toUpperCase() + sectionId.slice(1);
-    return `/${path}`;
-  }, []);
-
-  // Convert route path to section ID
-  const pathToSection = useCallback((path: string): string => {
-    // Remove leading slash and lowercase
-    const section = path.replace(/^\//, "").toLowerCase();
-    return section || "home";
-  }, []);
-
-  // Update URL based on active section
+  // Keep URL in sync with the active section as the user scrolls.
+  // Hash-based URLs (e.g. /RajTrivedi/#home) are GitHub-Pages-safe: refreshing
+  // never hits the server with a path it doesn't know about, so there's no 404.
   useEffect(() => {
     if (!enabled || !activeSection) return;
 
-    // Debounce URL updates to prevent excessive history entries
     clearTimeout(timeoutRef.current);
 
     timeoutRef.current = setTimeout(() => {
-      const newPath = sectionToPath(activeSection);
-      const currentPath = location.pathname.replace(/\/$/, ""); // Remove trailing slash
+      const currentHash = readHashSection();
 
-      // Only update if path actually changed
-      if (newPath !== currentPath && activeSection !== lastUpdateRef.current) {
+      if (
+        activeSection !== currentHash &&
+        activeSection !== lastUpdateRef.current
+      ) {
         lastUpdateRef.current = activeSection;
 
-        // Use replaceState to update URL without adding history entry
-        // This prevents back button from cycling through scroll positions
+        // replaceState avoids polluting the back/forward history with one
+        // entry per section while scrolling. Preserve the current pathname
+        // and search so we don't accidentally rewrite the GitHub Pages base.
+        const { pathname, search } = window.location;
         window.history.replaceState(
           { section: activeSection },
           "",
-          `/RajTrivedi${newPath}` // Include base path for GitHub Pages
+          `${pathname}${search}#${activeSection}`
         );
       }
     }, debounceMs);
 
     return () => clearTimeout(timeoutRef.current);
-  }, [activeSection, enabled, sectionToPath, location.pathname, debounceMs]);
+  }, [activeSection, enabled, debounceMs]);
 
-  // Get initial section from URL
+  // Get initial section from URL hash (e.g. /RajTrivedi/#projects -> "projects")
   const getInitialSection = useCallback((): string => {
-    return pathToSection(location.pathname);
-  }, [location.pathname, pathToSection]);
+    return readHashSection() || "home";
+  }, []);
 
   return {
     getInitialSection,
-    sectionToPath,
-    pathToSection,
   };
 };
 
