@@ -167,7 +167,7 @@ const skillsWithProjects: SkillData[] = [
   },
 ];
 
-// Slugify a skill name for use as an HTML id (accordion pair — audit 02c V8).
+// Slugify a skill name for use as an HTML id (accordion pair, audit 02c V8).
 const skillPanelId = (name: string) =>
   `skill-detail-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
 
@@ -358,7 +358,7 @@ const InteractiveSkillsCard = () => {
         ))}
       </div>
 
-      {/* Related projects panel — id pairs with aria-controls on the
+      {/* Related projects panel, id pairs with aria-controls on the
           matching InteractiveSkillPill (audit 02c V8). */}
       <AnimatePresence>
         {activeSkillData && (

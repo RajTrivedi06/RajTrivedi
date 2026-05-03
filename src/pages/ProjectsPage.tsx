@@ -79,7 +79,7 @@ const projects: Project[] = [
 ];
 
 // Status gets three coordinated channels (colored dot + uppercase micro-caps
-// label + muted subtitle) so it never relies on color alone — the tokens
+// label + muted subtitle) so it never relies on color alone, the tokens
 // satisfy §1.4.1 and read as editorial meta, not a loud pill.
 const STATUS_META: Record<
   Project["status"],
@@ -107,7 +107,7 @@ const STATUS_META: Record<
 // One full-width editorial row per project. Controls live inline at the
 // bottom and are always focusable; no affordance hides behind hover. A row
 // with neither liveUrl nor githubUrl simply omits the action block
-// entirely — no disabled buttons, no dead anchors.
+// entirely, no disabled buttons, no dead anchors.
 
 const ProjectRow: React.FC<{
   project: Project;
@@ -121,7 +121,7 @@ const ProjectRow: React.FC<{
   const hasAnyUrl = Boolean(project.liveUrl || project.githubUrl);
   const status = STATUS_META[project.status];
 
-  // Reduced-motion users get no entrance animation — content is in its
+  // Reduced-motion users get no entrance animation, content is in its
   // final position on first paint. Everyone else gets a brief rise+fade.
   const motionProps = shouldReduceMotion
     ? {}
@@ -140,7 +140,7 @@ const ProjectRow: React.FC<{
       {...motionProps}
       className="group relative grid gap-x-10 gap-y-6 border-b border-white/15 py-14 first:pt-2 last:border-b-0 md:grid-cols-[auto_1fr]"
     >
-      {/* Editorial index: 01 / 03. Decorative — hidden from AT. */}
+      {/* Editorial index: 01 / 03. Decorative, hidden from AT. */}
       <span
         aria-hidden
         className="font-mono text-[11px] tracking-[0.35em] text-white/40 md:self-start md:pt-3"
@@ -168,7 +168,7 @@ const ProjectRow: React.FC<{
           <span className="text-white/35">{project.subtitle}</span>
         </div>
 
-        {/* Display title — system serif stack via Tailwind's font-serif.
+        {/* Display title, system serif stack via Tailwind's font-serif.
             A later pass can swap in a variable face (Fraunces / Newsreader)
             via tailwind.config.js without touching this file. */}
         <h2 className="font-serif text-[2.5rem] font-medium leading-[0.95] tracking-[-0.02em] sm:text-[3.5rem]">
@@ -182,7 +182,7 @@ const ProjectRow: React.FC<{
           {project.description}
         </p>
 
-        {/* Image strip — subdued, supporting role. Desaturated by default;
+        {/* Image strip, subdued, supporting role. Desaturated by default;
             returns to full saturation on hover as a quiet reward, not a
             requirement for any action. */}
         <picture>
@@ -200,7 +200,7 @@ const ProjectRow: React.FC<{
           />
         </picture>
 
-        {/* Stack byline — mono tokens separated by faint // marks. */}
+        {/* Stack byline, mono tokens separated by faint // marks. */}
         <ul className="flex flex-wrap items-center gap-y-1 font-mono text-[12px] text-white/55">
           {project.tech.map((tech, i) => (
             <li key={tech} className="inline-flex items-center">
@@ -214,7 +214,7 @@ const ProjectRow: React.FC<{
           ))}
         </ul>
 
-        {/* Controls — always visible, only render for URLs that exist.
+        {/* Controls, always visible, only render for URLs that exist.
             Accessible names carry the 02c fixes: "Open {title} live site"
             and "View {title} on GitHub". Focus rings match the pattern
             landed in 3303d82 (solid purple-400, offset against black). */}
@@ -260,7 +260,7 @@ const ProjectsPage: React.FC = () => {
   return (
     <div className="relative min-h-screen w-full text-white px-4 py-8 sm:px-8 sm:py-12">
       <div className="mx-auto w-full max-w-5xl">
-        {/* Section header — count read as an editorial "folio" mark. */}
+        {/* Section header, count read as an editorial "folio" mark. */}
         <header className="mb-12 flex items-baseline justify-between gap-6 border-b border-white/15 pb-6">
           <h1 className="text-3xl font-bold sm:text-5xl">
             <span className="bg-gradient-to-br from-white via-white to-purple-300 bg-clip-text text-transparent">
@@ -275,7 +275,7 @@ const ProjectsPage: React.FC = () => {
           </span>
         </header>
 
-        {/* Editorial stack — full-width rows, one per project. */}
+        {/* Editorial stack, full-width rows, one per project. */}
         {projects.map((project, i) => (
           <ProjectRow
             key={project.id}

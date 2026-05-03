@@ -73,7 +73,7 @@ export const SmoothScrollProvider = ({
   options = {},
 }: SmoothScrollProviderProps) => {
   // Lenis lives in state (not a ref) so the Actions context value can be
-  // memoized against it — ref mutation doesn't invalidate useMemo deps.
+  // memoized against it, ref mutation doesn't invalidate useMemo deps.
   const [lenis, setLenis] = useState<Lenis | null>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [scrollDirection, setScrollDirection] = useState<"up" | "down" | null>(
@@ -152,7 +152,7 @@ export const SmoothScrollProvider = ({
     [lenis]
   );
 
-  // Progress value is a new object every frame by design — its consumers
+  // Progress value is a new object every frame by design, its consumers
   // opt in to 60fps updates.
   const progressValue = useMemo<SmoothScrollProgress>(
     () => ({ scrollProgress, scrollDirection, isScrolling }),

@@ -15,7 +15,7 @@ export const useKeyboardNavigation = (
 ) => {
   const { enabled = true } = options;
   // Actions (stable): sections + navigateToSection.
-  // Progress (60fps): activeSection — this hook's host rerenders on every
+  // Progress (60fps): activeSection, this hook's host rerenders on every
   // scroll frame, so keep its host component small (see KeyboardNavigator).
   const { sections, navigateToSection } = useScrollNavigationActions();
   const { activeSection } = useScrollNavigationProgress();
@@ -27,7 +27,7 @@ export const useKeyboardNavigation = (
       // Skip all modifier-key combinations. The user's chord belongs to
       // the browser or OS (e.g. Cmd+Home = go to top, Shift+ArrowDown =
       // extend text selection, Ctrl+ArrowDown = jump to end). We only
-      // handle bare keys — never hijack a modifier chord.
+      // handle bare keys, never hijack a modifier chord.
       if (event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) {
         return;
       }
@@ -44,7 +44,7 @@ export const useKeyboardNavigation = (
 
       const currentIndex = sections.findIndex((s) => s.id === activeSection);
 
-      // Keyboard-driven navigation is always immediate — do not animate.
+      // Keyboard-driven navigation is always immediate, do not animate.
       // Home/End are intentionally *not* handled here; the browser should
       // retain its native "scroll container top/bottom" behavior.
       switch (event.key) {

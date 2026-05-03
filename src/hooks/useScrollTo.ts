@@ -11,7 +11,7 @@ interface ScrollToOptions {
 }
 
 export const useScrollTo = () => {
-  // Narrow subscription: lenis only — Actions context identity is stable
+  // Narrow subscription: lenis only, Actions context identity is stable
   // across scroll frames, so this hook's consumers don't rerender at 60fps.
   const { lenis } = useSmoothScrollActions();
 

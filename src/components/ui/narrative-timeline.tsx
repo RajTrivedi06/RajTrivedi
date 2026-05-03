@@ -55,7 +55,7 @@ const MilestoneCard = ({
         "group cursor-default",
       )}
     >
-      {/* Year badge — paired with a "Current" text badge on the highlight
+      {/* Year badge, paired with a "Current" text badge on the highlight
           milestone so color is not the only differentiator (audit 02b V1). */}
       <span className="inline-flex items-center gap-2 mb-3">
         <span className="inline-block px-3 py-1 text-xs font-mono text-purple-400 bg-purple-500/10 rounded-full">

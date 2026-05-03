@@ -16,7 +16,7 @@ import ProjectsPage from "./ProjectsPage";
 import ConnectPage from "./ConnectPage";
 
 export default function SingleScrollPage() {
-  // Actions only — registerSectionRef identity never changes, so this
+  // Actions only, registerSectionRef identity never changes, so this
   // component no longer rerenders on scroll frames (audit 05 PD1).
   const { registerSectionRef } = useScrollNavigationActions();
 
@@ -47,7 +47,7 @@ export default function SingleScrollPage() {
 
   return (
     <div className="relative w-full">
-      {/* Keyboard navigation — isolated so its per-frame rerender (from
+      {/* Keyboard navigation, isolated so its per-frame rerender (from
           reading activeSection) doesn't cascade through the page subtree. */}
       <KeyboardNavigator />
 

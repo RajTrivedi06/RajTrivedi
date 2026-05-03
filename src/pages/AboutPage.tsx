@@ -17,7 +17,7 @@ const milestones: TimelineMilestone[] = [
     year: "2023",
     title: "The Deep Dive",
     description:
-      "Fell into the AI rabbit hole. Started building tools that think — from ML pipelines to intelligent agents.",
+      "Fell into the AI rabbit hole. Started building tools that think, from ML pipelines to intelligent agents.",
     icon: "brain",
   },
   {

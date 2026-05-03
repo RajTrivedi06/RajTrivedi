@@ -72,7 +72,7 @@ const ConnectPage: React.FC = () => {
           realities.
         </p>
 
-        {/* Open to section — <mark> gives the list a machine-readable
+        {/* Open to section, <mark> gives the list a machine-readable
             emphasis so assistive tech doesn't treat the color-only cue as
             plain prose (audit 02b V2). bg-transparent preserves the
             existing visual treatment. */}
@@ -181,7 +181,7 @@ const ConnectPage: React.FC = () => {
               MagneticButton with as="a" href="/<file>.pdf" download. */}
         </div>
 
-        {/* Email display — gray-500 failed AA on black (4.34:1); gray-400
+        {/* Email display, gray-500 failed AA on black (4.34:1); gray-400
             is 8.27:1 (audit 02a Table 1). */}
         <p className="text-gray-400 text-sm">
           Or email me directly at{" "}

@@ -39,7 +39,7 @@ interface ScrollNavigationActions {
   getSectionRef: (sectionId: string) => RefObject<HTMLElement> | null;
 }
 
-// Progress: per-frame state. New object every tick — consumers opt in.
+// Progress: per-frame state. New object every tick, consumers opt in.
 interface ScrollNavigationProgress {
   activeSection: string | null;
   sectionProgress: Record<string, number>;
@@ -99,7 +99,7 @@ export const ScrollNavigationProvider = ({
   // registering in the same commit phase into a single re-render, so
   // useActiveSection sees exactly one configs-array rebuild per batch
   // instead of N incremental rebuilds (which would rip down and recreate
-  // every ScrollTrigger N times — see audit 05 B2).
+  // every ScrollTrigger N times, see audit 05 B2).
   const [registrationVersion, setRegistrationVersion] = useState(0);
 
   const registerSectionRef = useCallback(
@@ -131,7 +131,7 @@ export const ScrollNavigationProvider = ({
     []
   );
 
-  // Active section detection — updates sectionProgress every frame.
+  // Active section detection, updates sectionProgress every frame.
   const { activeSection, sectionProgress } = useActiveSection({
     sections: sectionConfigs,
     offset: navOffset,
@@ -144,7 +144,7 @@ export const ScrollNavigationProvider = ({
     debounceMs: 150,
   });
 
-  // Navigate to a section. `immediate: true` skips the Lenis animation —
+  // Navigate to a section. `immediate: true` skips the Lenis animation,
   // used by keyboard navigation so arrow / PageUp/Down / digit keys jump
   // instantly (motion rule: never animate keyboard-initiated actions).
   const navigateToSection = useCallback(
@@ -195,7 +195,7 @@ export const ScrollNavigationProvider = ({
   }, [navigateToSection]);
 
   // Actions identity is stable across scroll frames: it only changes when
-  // `sections` or `navigateToSection` change (both rare — `sections` is
+  // `sections` or `navigateToSection` change (both rare, `sections` is
   // typically the module-level DEFAULT_SECTIONS, navigateToSection depends
   // only on `scrollTo` and `navOffset`). registerSectionRef and
   // getSectionRef are useCallback([]) so their identity never changes.
