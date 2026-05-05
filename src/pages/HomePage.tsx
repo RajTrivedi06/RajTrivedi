@@ -544,7 +544,7 @@ const HomePage = () => {
 
           {/* IDENT, editorial triptych. All motion choreography (cell
               wipe-ins, chip springs, UW stamp, cursor spotlight, ambient
-              scanline, status echo, scroll parallax) lives in IdentStrip. */}
+              scanline, status echo) lives in IdentStrip. */}
           <IdentStrip />
 
           {/* CTAs */}

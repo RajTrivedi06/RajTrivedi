@@ -97,6 +97,19 @@ export const SmoothScrollProvider = ({
 
     setLenis(lenisInstance);
 
+    // Belt-and-suspenders against scroll-restoration on reload: if the
+    // URL has no section hash, snap Lenis (and the underlying scroll
+    // position) to 0 immediately. main.tsx already calls window.scrollTo
+    // and strips the hash on reload, but Lenis can still latch onto a
+    // stale scrollY between those calls and its own mount, and a later
+    // ScrollTrigger.refresh() can re-anchor to that. Skipping when a
+    // hash is present preserves deep-link behavior — those land in
+    // ScrollNavigationProvider's mount effect, which scrolls to the
+    // matching section.
+    if (!window.location.hash) {
+      lenisInstance.scrollTo(0, { immediate: true });
+    }
+
     const onScroll = ({
       progress,
       direction,

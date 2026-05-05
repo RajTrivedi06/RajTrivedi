@@ -143,8 +143,15 @@ export const ScrollTextReveal = ({
       },
     });
 
-    // Force a refresh to check initial state
-    ScrollTrigger.refresh();
+    // Read initial progress from the trigger directly. ScrollTrigger.create
+    // measures the trigger as part of construction, so progress is populated.
+    // Calling global ScrollTrigger.refresh() here would re-anchor scroll via
+    // GSAP's save/restore mechanism and land the page mid-document on reload.
+    if (trigger.progress >= 1) {
+      progress.set(1);
+    } else if (trigger.progress > 0) {
+      progress.set(trigger.progress);
+    }
 
     return () => {
       trigger.kill();

@@ -18,9 +18,10 @@ TARGET_RATIO = TARGET_W / TARGET_H
 
 # (source relative to src/assets, out basename)
 JOBS = [
-    ("ChatImage.png", "translalia"),
+    ("translalia-source.jpg", "translalia"),
     ("coursesearchAI.jpg", "coursesearch"),
-    ("connectcablesimage.jpg", "mycosmosjobs"),
+    ("mycosmosjobs-source.jpg", "mycosmosjobs"),
+    ("basis-source.jpg", "basis"),
 ]
 
 

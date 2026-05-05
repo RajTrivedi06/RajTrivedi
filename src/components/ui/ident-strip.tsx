@@ -9,7 +9,6 @@
 //   • "stamp" entrance for the UW credential badge w/ wobble on hover
 //   • cursor-tracked radial spotlight per cell (useMotionValue + useMotionTemplate)
 //   • split-flap-style flip for the index counter ("003 · 003")
-//   • useScroll-driven parallax drift on the whole ribbon
 //   • ambient scanline that sweeps once a section is mounted
 //
 // Reduced-motion: ambient + entrance motion is suppressed; static state
@@ -20,8 +19,6 @@ import {
   motion,
   useMotionTemplate,
   useMotionValue,
-  useScroll,
-  useTransform,
 } from "motion/react";
 import { useRef, useState } from "react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -518,25 +515,14 @@ const StatusBody = ({ reduced }: { reduced: boolean }) => {
 
 export const IdentStrip = () => {
   const reduced = useReducedMotion();
-  const ref = useRef<HTMLElement>(null);
-
-  // Subtle scroll parallax, ribbon drifts ±8px through the section.
-  // Disabled under reduced motion.
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-  const yDrift = useTransform(scrollYProgress, [0, 1], [12, -12]);
 
   return (
     <motion.section
-      ref={ref}
       aria-label="At a glance"
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true, margin: "-100px" }}
       transition={{ duration: 0.6 }}
-      style={reduced ? undefined : { y: yDrift }}
       className="mt-16 md:mt-20"
     >
       <SlateHeader reduced={reduced} />

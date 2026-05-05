@@ -103,7 +103,7 @@ const MilestoneCard = ({
         >
           {cardContent}
         </div>
-        <div className="relative flex flex-col items-center order-2">
+        <div className="relative w-2/12 flex flex-col items-center order-2">
           <div
             className={cn(
               "flex h-14 w-14 items-center justify-center rounded-full text-white shadow-lg",
@@ -156,7 +156,7 @@ const MilestoneCard = ({
           stiffness: 200,
           damping: 15,
         }}
-        className="relative flex flex-col items-center order-2"
+        className="relative w-2/12 flex flex-col items-center order-2"
       >
         <motion.div
           whileHover={{ scale: 1.1 }}

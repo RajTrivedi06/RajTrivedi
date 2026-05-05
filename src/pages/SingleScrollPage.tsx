@@ -6,7 +6,6 @@ import NavDock from "../components/NavDock";
 import { KeyboardNavigator } from "../components/KeyboardNavigator";
 import { BackgroundGradientAnimation } from "../components/ui/background-gradient-animation";
 import { ScrollProgress } from "../components/ui/scroll-progress";
-import { SectionIndicator } from "../components/ui/section-indicator";
 
 // Page components used as sections
 import HomePage from "./HomePage";
@@ -36,15 +35,6 @@ export default function SingleScrollPage() {
     registerSectionRef("connect", connectRef);
   }, [registerSectionRef]);
 
-  // Section config for side indicator
-  const sectionConfig = [
-    { id: "home", label: "Home" },
-    { id: "about", label: "About" },
-    { id: "skills", label: "Skills" },
-    { id: "projects", label: "Projects" },
-    { id: "connect", label: "Connect" },
-  ];
-
   return (
     <div className="relative w-full">
       {/* Keyboard navigation, isolated so its per-frame rerender (from
@@ -53,9 +43,6 @@ export default function SingleScrollPage() {
 
       {/* Scroll Progress Indicator */}
       <ScrollProgress />
-
-      {/* Section Navigation Indicator */}
-      <SectionIndicator sections={sectionConfig} />
 
       {/* Fixed background gradient */}
       <div className="fixed inset-0 -z-10">
@@ -120,12 +107,16 @@ export default function SingleScrollPage() {
             <ProjectsPage />
           </section>
 
-          {/* Connect Section */}
+          {/* Connect Section. Intentionally NOT `min-h-screen`: the
+              composer + directory are shorter than a viewport, and as the
+              last section there's nothing below to scroll into. Forcing a
+              100vh minimum was leaving a long band of empty background
+              under the cards. */}
           <section
             ref={connectRef}
             id="connect"
             aria-label="Connect"
-            className="relative min-h-screen"
+            className="relative"
           >
             <ConnectPage />
           </section>
